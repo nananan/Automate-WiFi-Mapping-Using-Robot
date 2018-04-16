@@ -1,6 +1,6 @@
 import sys
 import time 
-from Phidget22.Devices.DCMotor import *
+from Phidgets.Devices.MotorControl import MotorControl
 from Phidget22.Devices.Encoder import *
 from Phidget22.PhidgetException import *
 from Phidget22.Phidget import *
@@ -10,8 +10,8 @@ rightWheels = 0
 leftWheels = 1
 
 try:
-    motorControl = DCMotor()
-    enc = Encoder()
+    motorControl = MotorControl()
+    #enc = Encoder()
     
 except RuntimeError as e:
     print("Runtime Exception %s" % e.details)
@@ -19,8 +19,14 @@ except RuntimeError as e:
     readin = sys.stdin.read(1)
     exit(1)
 
+
+def ErrorEvent(e, eCode, description):
+    print("Error %i : %s" % (eCode, description))
+
+def VelocityUpdateHandler(e):
+    print("Velocity: %f" % motorControl.getEncoderCount())
     
-def ObjectAttached(self):
+def EncoderAttached(self):
     try:
         attached = self
         print("\nAttach Event Detected (Information Below)")
@@ -37,83 +43,64 @@ def ObjectAttached(self):
         print("\n")
 
     except PhidgetException as e:
-        motorControl.setTargetVelocity(0)
         print("Phidget Exception %i: %s" % (e.code, e.details))
         print("Press Enter to Exit...\n")
         readin = sys.stdin.read(1)
         exit(1)   
     
-def ObjectDetached(self):
+def EncoderDetached(self):
     detached = self
     try:
         print("\nDetach event on Port %d Channel %d" % (detached.getHubPort(), detached.getChannel()))
     except PhidgetException as e:
-        motorControl.setTargetVelocity(0)
         print("Phidget Exception %i: %s" % (e.code, e.details))
         print("Press Enter to Exit...\n")
         readin = sys.stdin.read(1)
         exit(1)
 
-
-def ErrorEvent(e, eCode, description):
-    print("Error %i : %s" % (eCode, description))
-
-def VelocityUpdateHandler(e, velocity):
-    print("Velocity: %f" % velocity)
-    try:
-        print("Positon: %f" % motorControl.getTargetVelocity())
-    except PhidgetException as e:
-        motorControl.setTargetVelocity(0)
-
 def PositionChangeHandler(self, positionChange, timeChange, indexTriggered):
-    #print("Position: %f\n" % motorControl.getMotorCount())
+    print("Position: %f\n" % motorControl.getMotorCount())
     print("Position Changed: %7d  %7.3lf  %d\n" % (positionChange, timeChange, indexTriggered))
     
 
-try:
-    motorControl.setOnAttachHandler(ObjectAttached)
-    motorControl.setOnDetachHandler(ObjectDetached)
-    motorControl.setOnErrorHandler(ErrorEvent)
+try:    
+#    enc.setOnAttachHandler(EncoderAttached)
+#    enc.setOnDetachHandler(EncoderDetached)
+#    enc.setOnErrorHandler(ErrorEvent)
 
-    motorControl.setOnVelocityUpdateHandler(VelocityUpdateHandler)
-    
-    enc.setOnAttachHandler(ObjectAttached)
-    enc.setOnDetachHandler(ObjectDetached)
-    enc.setOnErrorHandler(ErrorEvent)
-
-    enc.setOnPositionChangeHandler(PositionChangeHandler)
-
+#    enc.setOnPositionChangeHandler(PositionChangeHandler)
+    #motorControl.setOnPositionChangeHandler(PositionChangeHandler)
+    motorControl.setOnVelocityChangeHandler(VelocityUpdateHandler)
+    motorControl.openPhidget()
     print("Waiting for the Phidget DCMotor Object to be attached...")
-    motorControl.openWaitForAttachment(5000)
-    enc.openWaitForAttachment(5000)
+    motorControl.waitForAttach(5000)
+#    enc.openWaitForAttachment(5000)
 except PhidgetException as e:
-    motorControl.setTargetVelocity(0)
     print("Phidget Exception %i: %s" % (e.code, e.details))
     print("Press Enter to Exit...\n")
     readin = sys.stdin.read(1)
     exit(1)
 
-
-if(not enc.getEnabled()):
-    enc.setEnabled(1)
-
-print("INITIAL POSITION: %d\n" % enc.getPosition());
-
 print("Setting Target Velocity to 1 for 5 seconds...\n")
-motorControl.setTargetVelocity(0.1)
-time.sleep(10)
-
-print("FINAL POSITION: %d\n" % enc.getPosition());
-
-print("Setting Target Velocity to 0 for 5 seconds...\n")
-motorControl.setTargetVelocity(0)
+motorControl.setVelocity(leftWheels,5)
 time.sleep(1)
 
+#print(motorControl.getEncoderPosition(leftWheels));
+
+#if(not enc.getEnabled()):
+#    enc.setEnabled(1)
+
+print("Setting Target Velocity to 0 for 5 seconds...\n")
+motorControl.setVelocity(leftWheels,0)
+time.sleep(1)
+motorControl.setVelocity(rightWheels,0)
+time.sleep(1)
+
+
 try:
-    motorControl.close()
-    enc.close()
+    motorControl.closePhidget()
+    #enc.close()
 except PhidgetException as e:
-    motorControl.setTargetVelocity(0)
     print("Phidget Exception %i: %s" % (e.code, e.details))
     print("Press Enter to Exit...\n")
     readin = sys.stdin.read(1)
