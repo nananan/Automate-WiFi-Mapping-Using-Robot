@@ -1,0 +1,4 @@
+  ros-kinetic-amcl ros-kinetic-base-local-planner ros-kinetic-carrot-planner ros-kinetic-clear-costmap-recovery
+  ros-kinetic-costmap-2d ros-kinetic-dwa-local-planner ros-kinetic-fake-localization ros-kinetic-global-planner
+  ros-kinetic-move-base ros-kinetic-move-slow-and-clear ros-kinetic-nav-core ros-kinetic-navfn
+  ros-kinetic-navigation ros-kinetic-rotate-recovery
