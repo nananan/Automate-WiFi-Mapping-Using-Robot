@@ -1,0 +1,4 @@
+rosbuild_add_executable(corobot_hokuyo hokuyo_node.cpp)
+find_library(LOG4CXX_LIBRARY log4cxx)
+target_link_libraries(corobot_hokuyo ${LOG4CXX_LIBRARY})
+target_link_libraries(corobot_hokuyo libhokuyo)
