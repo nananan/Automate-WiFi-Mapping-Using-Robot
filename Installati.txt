@@ -2,3 +2,11 @@
   ros-kinetic-costmap-2d ros-kinetic-dwa-local-planner ros-kinetic-fake-localization ros-kinetic-global-planner
   ros-kinetic-move-base ros-kinetic-move-slow-and-clear ros-kinetic-nav-core ros-kinetic-navfn
   ros-kinetic-navigation ros-kinetic-rotate-recovery
+
+  
+  
+  
+  NON INSTALLATI
+  map-server
+  robot_pose_ekf
+  voxel_grid
