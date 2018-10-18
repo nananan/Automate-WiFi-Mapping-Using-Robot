@@ -16,6 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   pcl_conversions
   pcl_ros
+  corobot_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -50,6 +51,10 @@ catkin_package(
 include_directories(
   ${catkin_INCLUDE_DIRS}
 )
+
+include_directories(include ${catkin_INCLUDE_DIRS})
+
+add_dependencies(joystick_control corobot_msgs_gencpp)
 
 
 

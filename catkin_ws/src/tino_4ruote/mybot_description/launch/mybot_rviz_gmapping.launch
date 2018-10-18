@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <launch>
 
+  <param name="robot_description" command="$(find xacro)/xacro.py '$(find mybot_description)/urdf/mybot.xacro'"/>
+
 
 
   <!-- Show in Rviz   -->

@@ -4,11 +4,20 @@
 #include <tf/transform_broadcaster.h>
 #include <nav_msgs/Odometry.h>
 #include <std_msgs/Float32.h>
+#include <std_msgs/Int32.h>
+#include <corobot_msgs/MotorCommand.h>
+
 double width_robot = 0.1;
 double wheel_radius = 0.05;
 double vx = 0;
 double vy = 0;
 double vth = 0;
+int speed_value = 75;
+
+void velocityCallback(const std_msgs::Int32::ConstPtr& msg)
+{
+	speed_value = msg->data;
+}
 
 void cmd_velCallback(const geometry_msgs::Twist &twist_aux)
 {
@@ -31,11 +40,15 @@ int main(int argc, char** argv) {
 	ros::NodeHandle n;
 	ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("odom", 10);
 	ros::Subscriber cmd_vel_sub = n.subscribe("cmd_vel", 10, cmd_velCallback);
+	ros::Publisher driveControl_pub = n.advertise<corobot_msgs::MotorCommand>("PhidgetMotor",100);
+	ros::Subscriber velocity = n.subscribe<std_msgs::Int32>("velocityValue", 1000, velocityCallback);
 
 	// initial position
 	double x = 0.0; 
 	double y = 0.0;
 	double th = 0;
+	
+	const double vel_const = 20;
 
 	ros::Time current_time;
 	ros::Time last_time;
@@ -108,6 +121,27 @@ int main(int argc, char** argv) {
 		// publishing the odometry and the new tf
 		broadcaster.sendTransform(odom_trans);
 		odom_pub.publish(odom);
+		
+		vx *= vel_const;
+		vy *= vel_const;
+	
+		if (vy > vel_const)
+			vy = vel_const;
+		if (vy < -vel_const)
+			vy = -vel_const;
+		if (vx > vel_const)
+			vx = vel_const;
+		if (vx < -vel_const)
+			vx = -vel_const;	
+
+		corobot_msgs::MotorCommand msg_com;
+		msg_com.leftSpeed = vx;
+		msg_com.rightSpeed = vy;
+		msg_com.secondsDuration = 3;
+		msg_com.acceleration = 15;
+
+		driveControl_pub.publish(msg_com);
+
 		ros::spinOnce();
 		loop_rate.sleep();
 	}

@@ -33,4 +33,8 @@
   <depend>sensor_msgs</depend>
   <depend>std_msgs</depend>
   <depend>tf</depend>
+  <depend>corobot_msgs</depend>
 </package>
+
+
+
