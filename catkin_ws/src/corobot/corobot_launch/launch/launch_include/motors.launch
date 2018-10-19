@@ -37,7 +37,7 @@
 		<param name="base_width" type="double" value="$(arg base_width)"/>
 		<param name="TwoWheelDrive" type="bool" value="$(arg TwoWheelDrive)"/>
 		<param name="FourWheelDrive" type="bool" value="$(arg FourWheelDrive)"/>
-		<param name="publish_odom_tf" type="bool" value="0"/> 
+		<param name="publish_odom_tf" type="bool" value="0"/>
 	<remap from="odometry" to="odom"/>
 	</node>-->
   </group>

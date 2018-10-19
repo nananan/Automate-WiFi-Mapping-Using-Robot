@@ -47,8 +47,11 @@ int main(int argc, char** argv) {
 	double x = 0.0; 
 	double y = 0.0;
 	double th = 0;
+	double speed_l = 0.0;
+	double speed_r = 0.0;
 	
-	const double vel_const = 20;
+	//avevo messo 20 prima
+	const double vel_const = 30;
 
 	ros::Time current_time;
 	ros::Time last_time;
@@ -122,21 +125,21 @@ int main(int argc, char** argv) {
 		broadcaster.sendTransform(odom_trans);
 		odom_pub.publish(odom);
 		
-		vx *= vel_const;
-		vy *= vel_const;
+		speed_r = vx * vel_const;
+		speed_l = vy * vel_const;
 	
-		if (vy > vel_const)
-			vy = vel_const;
-		if (vy < -vel_const)
-			vy = -vel_const;
-		if (vx > vel_const)
-			vx = vel_const;
-		if (vx < -vel_const)
-			vx = -vel_const;	
+		if (speed_l > vel_const)
+			speed_l = vel_const;
+		if (speed_l < -vel_const)
+			speed_l = -vel_const;
+		if (speed_r > vel_const)
+			speed_r = vel_const;
+		if (speed_r < -vel_const)
+			speed_r = -vel_const;	
 
 		corobot_msgs::MotorCommand msg_com;
-		msg_com.leftSpeed = vx;
-		msg_com.rightSpeed = vy;
+		msg_com.leftSpeed = speed_l;
+		msg_com.rightSpeed = speed_r;
 		msg_com.secondsDuration = 3;
 		msg_com.acceleration = 15;
 
