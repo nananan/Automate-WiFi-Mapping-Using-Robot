@@ -36,7 +36,7 @@ void cmd_velCallback(const geometry_msgs::Twist &twist_aux)
 
 int main(int argc, char** argv) {
 
-	ros::init(argc, argv, "c8odom");
+	ros::init(argc, argv, "odometry_controller");
 	ros::NodeHandle n;
 	ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("odom", 10);
 	ros::Subscriber cmd_vel_sub = n.subscribe("cmd_vel", 10, cmd_velCallback);
