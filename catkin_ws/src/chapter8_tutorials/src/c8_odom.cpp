@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
 	// message declarations
 	geometry_msgs::TransformStamped odom_trans;
 	odom_trans.header.frame_id = "odom";
-	odom_trans.child_frame_id = "base_link";
+	odom_trans.child_frame_id = "base_footprint";
 
 	while (ros::ok()) {
 		current_time = ros::Time::now(); 
@@ -91,7 +91,7 @@ int main(int argc, char** argv) {
 		nav_msgs::Odometry odom;
 		odom.header.stamp = current_time;
 		odom.header.frame_id = "odom";
-		odom.child_frame_id = "base_link";
+		odom.child_frame_id = "base_footprint";
 
 		// position
 		odom.pose.pose.position.x = x;
