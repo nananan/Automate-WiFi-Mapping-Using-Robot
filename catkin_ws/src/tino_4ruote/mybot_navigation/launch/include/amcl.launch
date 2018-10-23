@@ -3,9 +3,9 @@
   <arg name="use_map_topic" default="true"/>
   <arg name="scan_topic" default="scan"/>
 
-  <!--<node pkg="tf" type="static_transform_publisher" name="map_odom_broadcaster"
+  <!-- <node pkg="tf" type="static_transform_publisher" name="map_odom_broadcaster"
       args="0 0 0 0 0 0 map odom 100"/>
-  <node pkg="tf" type="static_transform_publisher" name="odom_2_base"
+ <node pkg="tf" type="static_transform_publisher" name="odom_2_base"
       args="0 0 0 0 0 0 odom base_footprint 100"/>
   <node pkg="tf" type="static_transform_publisher" name="base_2_laser"
       args="0 0 0 0 0 0 base_footprint laser 100"/>-->
@@ -14,7 +14,7 @@
     <param name="use_map_topic" value="$(arg use_map_topic)"/>
 
     <!-- Publish scans from best pose at a max of 10 Hz -->
-    <param name="odom_model_type" value="diff-corrected"/>
+    <param name="odom_model_type" value="diff"/>
     <param name="odom_alpha5" value="0.1"/>
     <param name="gui_publish_rate" value="10.0"/>
     <param name="laser_max_beams" value="360"/>

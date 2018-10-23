@@ -202,7 +202,7 @@ void publish_odometry(ros::Publisher& odom_pub, tf::TransformBroadcaster& odom_b
   setValues();
 
 	// Publish the transform between the base_link and the laser range finder
-	broadcaster.sendTransform(tf::StampedTransform(tf::Transform(tf::Quaternion(0, 0, 0, 1), tf::Vector3(0.15, 0, 0)),ros::Time::now(),"base_link", "laser"));
+	broadcaster.sendTransform(tf::StampedTransform(tf::Transform(tf::Quaternion(0, 0, 0, 1), tf::Vector3(0.15, 0, 0)),ros::Time::now(),"base_footprint", "hokuyo"));
 
 	// All odometry is 6DOF we'll need a quaternion created from yaw
 	geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(th);
@@ -257,7 +257,7 @@ void publish_odometry(ros::Publisher& odom_pub, tf::TransformBroadcaster& odom_b
 
 	/** Set the velocity values */
 	
-  odom.child_frame_id = "base_link";
+  odom.child_frame_id = "base_footprint";
 
   // If robot is moving
   if (firstTime == false && current.header.stamp != previous.header.stamp) {

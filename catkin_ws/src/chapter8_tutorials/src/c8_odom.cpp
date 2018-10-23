@@ -7,8 +7,8 @@
 #include <std_msgs/Int32.h>
 #include <corobot_msgs/MotorCommand.h>
 
-double width_robot = 0.1;
-double wheel_radius = 0.05;
+double width_robot = 0.238125;
+double wheel_radius = 0.165;
 double vx = 0;
 double vy = 0;
 double vth = 0;
@@ -59,7 +59,7 @@ int main(int argc, char** argv) {
 	last_time = ros::Time::now();
 
 	tf::TransformBroadcaster broadcaster;
-	ros::Rate loop_rate(20);
+	ros::Rate loop_rate(30);
 
 	const double degree = M_PI/180;
 
@@ -125,8 +125,8 @@ int main(int argc, char** argv) {
 		broadcaster.sendTransform(odom_trans);
 		odom_pub.publish(odom);
 		
-		speed_r = vx * vel_const;
-		speed_l = vy * vel_const;
+		speed_r = vy * vel_const;
+		speed_l = vx * vel_const;
 	
 		if (speed_l > vel_const)
 			speed_l = vel_const;

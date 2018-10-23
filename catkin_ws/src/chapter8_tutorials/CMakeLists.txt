@@ -69,6 +69,8 @@ add_executable(c8_kinect src/c8_kinect.cpp)
 add_executable(c8_dynamixel src/c8_dynamixel.cpp)
 add_executable(c8_fixtoUTM src/c8_fixtoUTM.cpp)
 
+add_executable(base_controller src/base_controller.cpp)
+
 ## Specify libraries to link a library or executable target against
  target_link_libraries(c8_teleop_joy
    ${catkin_LIBRARIES} )
@@ -95,3 +97,5 @@ add_executable(c8_fixtoUTM src/c8_fixtoUTM.cpp)
  target_link_libraries(c8_fixtoUTM
    ${catkin_LIBRARIES} 
  )
+
+target_link_libraries(base_controller ${catkin_LIBRARIES})
