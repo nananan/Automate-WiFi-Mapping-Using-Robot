@@ -8,11 +8,11 @@
     <rosparam file="$(find mybot_navigation)/config/map_nav_params/local_costmap_params.yaml" command="load" />
     <rosparam file="$(find mybot_navigation)/config/map_nav_params/global_costmap_params.yaml" command="load" />
 
-    <rosparam file="$(find mybot_navigation)/config/base_local_planner_params.yaml" command="load" />
+    <rosparam file="$(find mybot_navigation)/config/dwa_local_planner_params.yaml" command="load" />
     <rosparam file="$(find mybot_navigation)/config/move_base_params.yaml" command="load" />
 
     <param name="base_global_planner" type="string" value="navfn/NavfnROS" />
-    <param name="base_local_planner" value="base_local_planner/TrajectoryPlannerROS"/>
+    <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS"/>
 
     <!--<remap from="odom" to="mobile_base_controller/odom" />-->
     <remap from="odom" to="odom" />

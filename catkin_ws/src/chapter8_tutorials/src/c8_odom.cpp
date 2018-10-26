@@ -26,9 +26,19 @@ void cmd_velCallback(const geometry_msgs::Twist &twist_aux)
 	double vel_th = twist_aux.angular.z;
 	double right_vel = 0.0;
 	double left_vel = 0.0;
-
-	left_vel = (twist_aux.linear.x - width_robot*twist_aux.angular.z)/wheel_radius;
-	right_vel = (twist_aux.linear.x + width_robot*twist_aux.angular.z)/wheel_radius;
+	
+	if (vel_x == 0) {
+		right_vel = vel_th * width_robot/2;
+		left_vel = (-1)*right_vel;
+	}
+	else if (vel_th == 0) {
+		right_vel = left_vel = vel_x;	
+	}
+	else {
+		left_vel = twist_aux.linear.x - width_robot*twist_aux.angular.z/2;
+		right_vel = twist_aux.linear.x + width_robot*twist_aux.angular.z/2;
+	}
+	ROS_ERROR_STREAM("VALUEEE "<<left_vel<<" "<<right_vel<<" "<<vel_x<<" "<<vel_th);
 	vx = left_vel;
 	vy = right_vel;
 	vth = twist_aux.angular.z;
@@ -40,8 +50,7 @@ int main(int argc, char** argv) {
 	ros::NodeHandle n;
 	ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("odom", 10);
 	ros::Subscriber cmd_vel_sub = n.subscribe("cmd_vel", 10, cmd_velCallback);
-	ros::Publisher driveControl_pub = n.advertise<corobot_msgs::MotorCommand>("PhidgetMotor",100);
-	ros::Subscriber velocity = n.subscribe<std_msgs::Int32>("velocityValue", 1000, velocityCallback);
+
 
 	// initial position
 	double x = 0.0; 
@@ -72,8 +81,8 @@ int main(int argc, char** argv) {
 		current_time = ros::Time::now(); 
 
 		double dt = (current_time - last_time).toSec();
-		double delta_x = wheel_radius*(vx +vy)* cos(th)* dt/2;
-		double delta_y = wheel_radius*(vx+vy)*sin(th) * dt/2;
+		double delta_x = (wheel_radius*(vx +vy)* cos(th))* dt/2;
+		double delta_y = (wheel_radius*(vx+vy)*sin(th)) * dt/2;
 		double delta_th = vth * dt;
 
 		x += delta_x;
@@ -125,25 +134,7 @@ int main(int argc, char** argv) {
 		broadcaster.sendTransform(odom_trans);
 		odom_pub.publish(odom);
 		
-		speed_r = vy * vel_const;
-		speed_l = vx * vel_const;
-	
-		if (speed_l > vel_const)
-			speed_l = vel_const;
-		if (speed_l < -vel_const)
-			speed_l = -vel_const;
-		if (speed_r > vel_const)
-			speed_r = vel_const;
-		if (speed_r < -vel_const)
-			speed_r = -vel_const;	
 
-		corobot_msgs::MotorCommand msg_com;
-		msg_com.leftSpeed = speed_l;
-		msg_com.rightSpeed = speed_r;
-		msg_com.secondsDuration = 3;
-		msg_com.acceleration = 15;
-
-		driveControl_pub.publish(msg_com);
 
 		ros::spinOnce();
 		loop_rate.sleep();

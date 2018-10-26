@@ -32,14 +32,14 @@
 	<remap from="odometry" to="odom"/>
     </node>
 
-	<node pkg="corobot_state_tf" name="corobot_state_tf" type="corobot_state_tf" output="screen">
+	<!--<node pkg="corobot_state_tf" name="corobot_state" type="corobot_state" output="screen">
 		<param name="ticks_meter" type="int" value="$(arg ticks_meter)"/>
 		<param name="base_width" type="double" value="$(arg base_width)"/>
 		<param name="TwoWheelDrive" type="bool" value="$(arg TwoWheelDrive)"/>
 		<param name="FourWheelDrive" type="bool" value="$(arg FourWheelDrive)"/>
 		<param name="publish_odom_tf" type="bool" value="1"/>
 	<remap from="odometry" to="odom"/>
-	</node>
+	</node>-->
   </group>
 
 
