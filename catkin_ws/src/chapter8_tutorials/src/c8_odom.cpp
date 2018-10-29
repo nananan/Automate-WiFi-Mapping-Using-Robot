@@ -28,15 +28,15 @@ void cmd_velCallback(const geometry_msgs::Twist &twist_aux)
 	double left_vel = 0.0;
 	
 	if (vel_x == 0) {
-		right_vel = vel_th * width_robot/2;
+		right_vel = vel_th * width_robot/wheel_radius ;
 		left_vel = (-1)*right_vel;
 	}
 	else if (vel_th == 0) {
 		right_vel = left_vel = vel_x;	
 	}
 	else {
-		left_vel = twist_aux.linear.x - width_robot*twist_aux.angular.z/2;
-		right_vel = twist_aux.linear.x + width_robot*twist_aux.angular.z/2;
+		left_vel = twist_aux.linear.x - width_robot*twist_aux.angular.z/wheel_radius ;
+		right_vel = twist_aux.linear.x + width_robot*twist_aux.angular.z/wheel_radius ;
 	}
 	ROS_ERROR_STREAM("VALUEEE "<<left_vel<<" "<<right_vel<<" "<<vel_x<<" "<<vel_th);
 	vx = left_vel;
