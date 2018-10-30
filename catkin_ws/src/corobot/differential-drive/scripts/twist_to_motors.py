@@ -38,7 +38,7 @@ class TwistToMotors():
         rospy.loginfo("%s started" % nodename)
     
         self.w = 0.238125 #rospy.get_param("~base_width", 0.2)
-        self.wheel_radius = 0.165
+        self.wheel_radius = 0.25
         
         self.pub_lmotor = rospy.Publisher('lwheel_vtarget', Float32, queue_size=10)
         self.pub_rmotor = rospy.Publisher('rwheel_vtarget', Float32, queue_size=10)

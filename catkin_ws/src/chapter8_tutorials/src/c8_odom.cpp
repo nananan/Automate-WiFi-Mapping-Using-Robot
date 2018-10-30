@@ -8,7 +8,7 @@
 #include <corobot_msgs/MotorCommand.h>
 
 double width_robot = 0.238125;
-double wheel_radius = 0.165;
+double wheel_radius = 0.25;
 double vx = 0;
 double vy = 0;
 double vth = 0;
