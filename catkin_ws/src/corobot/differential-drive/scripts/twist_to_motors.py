@@ -73,7 +73,7 @@ class TwistToMotors():
     
         # dx = (l + r) / 2
         # dr = (r - l) / w
-        rospy.loginfo("FIRST publishing: (%f, %f)", self.dx, self.dr) 
+        # rospy.loginfo("FIRST publishing: (%f, %f)", self.dx, self.dr) 
         if self.dx == 0:
         	self.right = self.dr*self.w / self.wheel_radius
         	self.left = (-1)*self.right
@@ -83,7 +83,7 @@ class TwistToMotors():
         	self.left = self.dx-self.w *self.dr /self.wheel_radius
         	self.right = self.dx+self.w*self.dr / self.wheel_radius
 
-        rospy.loginfo("publishing: (%f, %f)", self.left, self.right) 
+        #rospy.loginfo("publishing: (%f, %f)", self.left, self.right) 
                 
         self.pub_lmotor.publish(self.left)
         self.pub_rmotor.publish(self.right)

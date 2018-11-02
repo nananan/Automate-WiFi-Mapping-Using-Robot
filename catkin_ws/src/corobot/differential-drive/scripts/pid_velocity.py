@@ -73,7 +73,7 @@ class PidVelocity():
         self.prev_vel = [0.0] * self.rolling_pts
         self.wheel_latest = 0.0
         self.prev_pid_time = rospy.Time.now()
-        rospy.logdebug("%s got Kp:%0.3f Ki:%0.3f Kd:%0.3f tpm:%0.3f" % (self.nodename, self.Kp, self.Ki, self.Kd, self.ticks_per_meter))
+        rospy.loginfo("%s got Kp:%0.3f Ki:%0.3f Kd:%0.3f tpm:%0.3f" % (self.nodename, self.Kp, self.Ki, self.Kd, self.ticks_per_meter))
         
         #### subscribers/publishers 
         rospy.Subscriber("wheel", Int16, self.wheelCallback) 
