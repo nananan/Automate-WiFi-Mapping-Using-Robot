@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(chapter8_tutorials)
+project(movement)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -56,11 +56,10 @@ include_directories(
 include_directories(include ${catkin_INCLUDE_DIRS})
 
 add_dependencies(joystick_control corobot_msgs_gencpp)
-add_dependencies(sendGoals ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
 add_executable(c8_odom odometry/c8_odom.cpp)
-add_executable(sendGoals src/sendGoals.cpp)
+add_executable(sendGoals odometry/sendGoals.cpp)
 
 ## Specify libraries to link a library or executable target against
 

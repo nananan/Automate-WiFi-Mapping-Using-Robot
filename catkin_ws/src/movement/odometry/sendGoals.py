@@ -3,9 +3,8 @@
 import rospy
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 
-
 import imp
-db_man = imp.load_source('DB_Manager', '/home/eliana/git/Cinnamon/db.py')
+db_man = imp.load_source('DB_Manager', '/home/wallf/git/Cinnamon/db.py')
 
 import actionlib
 from actionlib_msgs.msg import *
@@ -70,14 +69,16 @@ if __name__ == '__main__':
 	try:
 		rospy.init_node('nav_test', anonymous=False)
 		navigator = GoToPose()
-		
+		count = 1
 		DB_Man = db_man.DB_Manager()
 		waypoints = DB_Man.select_Waypoints()
 		for item in waypoints:
 			print(item)
-			position = {'x': item.position_x, 'y' : item.position_y, 'w': item.position_w}
-			quaternion = {'r1' : 0.000, 'r2' : 0.000, 'r3' : 0.000, 'r4' : 1.000}
-
+			position = {'x': item.position_x, 'y' : item.position_y, 'w': 0.0}
+			if count == 1:
+				quaternion = {'r1' : 0.000, 'r2' : 0.000, 'r3' : 0.000, 'r4' :  item.position_w}
+			else:
+				quaternion = {'r1' : 0.000, 'r2' : 0.000, 'r3' : 0.704773059143, 'r4' :  item.position_w}
 			rospy.loginfo("Go to (%s, %s, %s) pose", position['x'], position['y'], position['w'])
 			success = navigator.goto(position, quaternion)
 
@@ -85,9 +86,9 @@ if __name__ == '__main__':
 				rospy.loginfo("I'm here now... (%s, %s) pose", position['x'], position['y'])
 			else:
 				rospy.loginfo("The base failed to reach the desired pose")
-
-		# Sleep to give the last log messages time to be sent
-		rospy.sleep(1)
+			count = count+1
+			# Sleep to give the last log messages time to be sent
+			rospy.sleep(1)
 
 	except rospy.ROSInterruptException:
 		rospy.loginfo("Ctrl-C caught. Quitting")

@@ -12,7 +12,7 @@
 
   <!-- Show in Rviz   -->
   <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find mybot_description)/rviz/amcl.rviz"/> -->
-  <!--<node name="rviz" pkg="rviz" type="rviz" args="-d $(find mybot_description)/rviz/mapping.rviz"/>-->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find mybot_description)/rviz/mapping.rviz"/>
   <!--node name="rviz" pkg="rviz" type="rviz" args="-d $(find mybot_description)/launch/myrobot.rviz"/-->
 
 </launch>

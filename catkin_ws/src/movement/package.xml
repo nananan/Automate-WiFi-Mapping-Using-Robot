@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>chapter8_tutorials</name>
+  <name>movement</name>
   <version>0.1.0</version>
-  <description>Chapter 8 tutorials.</description>
+  <description>Movement.</description>
 
   <maintainer email="anil.mmm@gmail.com">Anil Mahtani</maintainer>
   <maintainer email="enrique.fernandez.perdomo@gmail.com">Enrique Fernandez</maintainer>

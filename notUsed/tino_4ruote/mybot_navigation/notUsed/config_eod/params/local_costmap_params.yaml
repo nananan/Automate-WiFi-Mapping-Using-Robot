@@ -1,0 +1,56 @@
+local_costmap:
+  # trasformazione tra la mappa e il robot
+  global_frame: /map
+  robot_base_frame: /base_footprint
+  
+  # frequenza di aggiornamento della local costmap
+  update_frequency: 3.0
+  
+  # frequenza con cui pubblica le informazioni
+  publish_frequency: 2.0
+
+  # true se si utilizza una mappa esistente o il map server
+  static_map: true
+
+  # true mantiene la costmap centrata sul robot mentre si sposta
+  rolling_window: true
+
+  # dimensioni della costmap (obstacle_range: 0.4)
+  width: 0.8
+  height: 0.8
+  
+  # risoluzione. non e' obbligatorio ma qui e' settata uguale a quella del file della mappa
+  resolution: 0.00254
+  
+  # tolleranza in sec nel ritardo delle trasformazioni di tf
+  transform_tolerance: 7.0
+
+  # frequenza del loop di pianificazione
+  planner_frequency: 0.5
+
+  # tolleranza in sec per trovare una pianificazione valida
+  planner_patiente: 10.0
+
+  robot_radius: 0.0
+
+  ################################ COMMON ##################
+  # soglia entro la quale un ostacolo entra nella local costmap
+  obstacle_range: 0.4
+
+  # soglia dopo la quale lo spazio è considerato libero
+  raytrace_range: 0.6
+
+  # indica forma del robot visto dall'alto. rettangolo 0.22x0.15
+  footprint: [ [-0.12,-0.075],[-0.12,0.075], [0.12, 0.075], [0.12,-0.075] ]
+
+  # soglia minima tra il footprint e l'ostacolo
+  inflation_radius: 0.20
+
+  # cambia il comportamento del robot vicino gli ostacoli: piu' o meno aggressivo
+  #cost_scaling_factor: 10.0
+
+  # sensore
+  observation_sources: scan point_cloud_sensor
+
+  scan: {sensor_frame: camera_link, observation_persistence: 0.0001, max_obstacle_height: 0.6, min_obstacle_height: 0.01, data_type: LaserScan, topic: /scan, marking: true, clearing: true}
+  point_cloud_sensor: {sensor_frame: camera_link, data_type: PointCloud2, topic: /camera/depth/points, marking: true, clearing: true}
