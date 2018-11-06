@@ -74,11 +74,9 @@ if __name__ == '__main__':
 		waypoints = DB_Man.select_Waypoints()
 		for item in waypoints:
 			print(item)
-			position = {'x': item.position_x, 'y' : item.position_y, 'w': 0.0}
-			if count == 1:
-				quaternion = {'r1' : 0.000, 'r2' : 0.000, 'r3' : 0.000, 'r4' :  item.position_w}
-			else:
-				quaternion = {'r1' : 0.000, 'r2' : 0.000, 'r3' : 0.704773059143, 'r4' :  item.position_w}
+			position = {'x': item.position_x, 'y' : item.position_y, 'w': item.position_z}
+			quaternion = {'r1' : item.orientation_x, 'r2' : item.orientation_y, 'r3' : item.orientation_z, 'r4' : item.orientation_w}
+
 			rospy.loginfo("Go to (%s, %s, %s) pose", position['x'], position['y'], position['w'])
 			success = navigator.goto(position, quaternion)
 

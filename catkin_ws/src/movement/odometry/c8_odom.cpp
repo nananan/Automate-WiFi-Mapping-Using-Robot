@@ -38,7 +38,7 @@ void cmd_velCallback(const geometry_msgs::Twist &twist_aux)
 		left_vel = twist_aux.linear.x - width_robot*twist_aux.angular.z/wheel_radius ;
 		right_vel = twist_aux.linear.x + width_robot*twist_aux.angular.z/wheel_radius ;
 	}
-	ROS_ERROR_STREAM("VALUEEE "<<left_vel<<" "<<right_vel<<" "<<vel_x<<" "<<vel_th);
+	//ROS_ERROR_STREAM("VALUEEE "<<left_vel<<" "<<right_vel<<" "<<vel_x<<" "<<vel_th);
 	vx = left_vel;
 	vy = right_vel;
 	vth = twist_aux.angular.z;
