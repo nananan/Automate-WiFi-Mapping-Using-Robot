@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
-#import rospy
+import rospy
 from scapy.all import *
 
 import os, argparse, sys, signal
 
 import imp
-db_man = imp.load_source('DB_Manager', '/home/eliana/git/Cinnamon/db.py')
-cinnamon_man = imp.load_source('Sniffer', '/home/eliana/git/Cinnamon/Sniffer.py')
+db_man = imp.load_source('DB_Manager', '/home/wallf/git/Cinnamon/db.py')
+cinnamon_man = imp.load_source('Sniffer', '/home/wallf/git/Cinnamon/Sniffer.py')
 
 from listener import Listen
 
@@ -15,12 +15,13 @@ class CinnamonController:
 
     def __init__(self):
         rospy.init_node('cinnamon_controller', anonymous=False)
-		rospy.loginfo("Started ")
+        rospy.loginfo("Started ")
         print("Started")
         self.stopSniff = False
         
-        self.interface = "wlp3s0_mon"
+        self.interface = "wlp2s0_mon"
         self.sniffer = cinnamon_man.Sniffer()
+        self.rate = rospy.Rate(10)
 
     def startSniff(self):
         print("Start to sniff from "+self.interface)
@@ -33,7 +34,9 @@ class CinnamonController:
         if self.stopSniff:
             return True
         return False
-
+    def spin(self):
+		while not rospy.is_shutdown():
+			self.rate.sleep()
 
 if __name__ == '__main__':
 
@@ -42,4 +45,5 @@ if __name__ == '__main__':
     listener = Listen(1, "Thread1", 2, cinnamon)
     listener.start()
 
+    #cinnamon.spin()
     cinnamon.startSniff()
