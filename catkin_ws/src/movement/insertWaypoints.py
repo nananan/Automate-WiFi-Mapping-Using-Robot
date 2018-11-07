@@ -20,7 +20,7 @@ class WaypointsController:
 		self.rate = rospy.Rate(10)
 
 	def goal_callback(self, goal_pose):
-		print(goal_pose)
+		#print(goal_pose)
 		pose = goal_pose.pose.position
 		orientation = goal_pose.pose.orientation
 
@@ -36,10 +36,10 @@ class WaypointsController:
 if __name__ == '__main__':
 	try:
 		waypoint_controller = WaypointsController()
-		waypoint_controller.spin() #In this application all user callbacks will be called from within the ros::spin() call. ros::spin()
-									#will not return until the node has been shutdown, either through a call to ros::shutdown() or a Ctrl-C. 
+		waypoint_controller.spin()
+
 		# Sleep to give the last log messages time to be sent
-		rospy.sleep(10)
+		rospy.sleep(2) #avevo messo 10 prima, ma siccome è solo alla fine forse va bene anche 2
 
 	except rospy.ROSInterruptException:
 		rospy.loginfo("Ctrl-C caught. Quitting")
