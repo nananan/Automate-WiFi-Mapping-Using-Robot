@@ -69,7 +69,7 @@
 			    <remap from="wheel_vel" to="rwheel_vel"/>
 			    <rosparam param="Kp">60</rosparam>
 			    <rosparam param="Ki">200</rosparam>
-			    <rosparam param="Kd">-0.3</rosparam>
+			    <rosparam param="Kd">-0.5</rosparam>
 			    <rosparam param="out_min">-100</rosparam>
 			    <rosparam param="out_max">100</rosparam>
 			    <rosparam param="rate">30</rosparam>
