@@ -6,8 +6,9 @@ import time
 from time import sleep
 
 from pynput.keyboard import Key, Listener
+user = 'eliana'
 import imp
-cinnamon_man = imp.load_source('Sniffer', '/home/wallf/git/Cinnamon/Sniffer.py')
+cinnamon_man = imp.load_source('Sniffer', '/home/'+user+'/git/Cinnamon/Sniffer.py')
 
 
 class Listen (threading.Thread):
