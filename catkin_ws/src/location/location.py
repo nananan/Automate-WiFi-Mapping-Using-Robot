@@ -38,7 +38,7 @@ class GUI_Manager:
 		#Set up GUI
 		self.window = tk.Tk()  #Makes main window
 		self.window.wm_title("Mapping Tino")
-		self.window.config(background="#FFFFFF")
+		self.window.config(background="#cdcdcd")
 		
 		print(self.window.winfo_x(), self.window.winfo_y())
 		print(self.window.geometry())
@@ -48,8 +48,9 @@ class GUI_Manager:
 
 		self.display1 = tk.Label(self.imageFrame)
 		self.display1.grid(row=0, column=0) #, padx=10, pady=2)  #Display 1
-		self.display2 = tk.Frame(self.window, width = 300, height = 100, relief = 'raised')
-		self.display2.grid(row=0, column=1) #Display 2
+		self.display2 = tk.Frame(self.window, width = 350, height = 100, relief = 'raised')
+		self.display2.config(background="#cdcdcd")
+		self.display2.grid(row=0, column=1,sticky="N", padx=20, pady=2) #Display 2
 
 		self.list_color = [["red","violet"],["blue","green"],["orange","black"]]
 		self.norm = matplotlib.colors.Normalize(vmin=-90, vmax=-20)
@@ -59,11 +60,13 @@ class GUI_Manager:
 		ap_cbs = dict()
 		for name in self.AP:
 			ap_cbs[name] = tk.Checkbutton(self.display2, text=name, onvalue=True, offvalue=False)
+			ap_cbs[name].config(background="#cdcdcd")
 			ap_cbs[name].var = tk.BooleanVar()
 			ap_cbs[name]['variable'] = ap_cbs[name].var
 			ap_cbs[name]['command'] = lambda w=ap_cbs[name]: self.upon_select(w)
 			
 			ap_cbs[name].grid(row=i, sticky=W)
+			ap_cbs[name].config(fg=self.list_color[col][0])
 			i = i+1
 			self.color_dict[name] = col
 			col = col+1
