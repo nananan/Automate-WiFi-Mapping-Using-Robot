@@ -7,8 +7,8 @@ import os, argparse, sys, signal
 
 user = "eliana"
 import imp
-db_man = imp.load_source('DB_Manager', '/home/'+user+'/git/Cinnamon/db.py')
-cinnamon_man = imp.load_source('Sniffer', '/home/'+user+'/git/Cinnamon/Sniffer.py')
+db_man = imp.load_source('DB_Manager', '../cinnamon/db.py')
+cinnamon_man = imp.load_source('Sniffer', '../cinnamon/Sniffer.py')
 
 from listener import Listen
 
@@ -35,9 +35,10 @@ class CinnamonController:
         if self.stopSniff:
             return True
         return False
-    def spin(self):
-		while not rospy.is_shutdown():
-			self.rate.sleep()
+
+    # def spin(self):
+	# 	while not rospy.is_shutdown():
+	# 		self.rate.sleep()
 
 if __name__ == '__main__':
 
