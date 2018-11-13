@@ -1,8 +1,7 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
-user = 'eliana'
 import imp
-db_man = imp.load_source('DB_Manager', '/home/'+user+'/git/Cinnamon/db.py')
+db_man = imp.load_source('DB_Manager', '../cinnamon/db.py')
 
 import numpy as np
 import matplotlib.pyplot as plt

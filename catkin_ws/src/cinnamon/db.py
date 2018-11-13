@@ -24,7 +24,14 @@ class DB_Manager:
 
 	def select_APs(self):
 		cursor = self.db.cursor()
-		return cursor.execute("SELECT access_point_address FROM APs")
+		cursor.execute("SELECT access_point_name, access_point_address FROM APs")
+		APs = {}
+		for it in cursor.fetchall():
+			APs[it[0]] = it[1]
+
+		# for key in APs:
+		# 	print(key, APs[key])
+		return APs
 
 	def update_signal_AP(self, strength, access_point_address):
 		cursor = self.db.cursor()
