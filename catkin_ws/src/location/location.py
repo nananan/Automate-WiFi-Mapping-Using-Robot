@@ -8,8 +8,12 @@ from PIL import ImageTk
 
 import math
 import numpy as np
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.colors
+from matplotlib import cm
+from colorspacious import cspace_converter
+from collections import OrderedDict
 # from mercator import *
 import re,os
 import imp
@@ -23,19 +27,6 @@ FILE_OFFICE_PATH = '../navigation/mybot_navigation/maps/ufficio.yaml'
 
 CONST_RESIZE = 5
 MAP_SIZE = 50
-
-# cdict1 = {'red':   ((0.0, 0.0, 0.0),
-#                    (0.5, 0.0, 0.1),
-#                    (1.0, 1.0, 1.0)),
-
-#          'green': ((0.0, 0.0, 0.0),
-#                    (1.0, 0.0, 0.0)),
-
-#          'blue':  ((0.0, 0.0, 1.0),
-#                    (0.5, 0.1, 0.0),
-#                    (1.0, 0.0, 0.0))
-#         }
-
 
 class GUI_Manager:
 	def __init__(self):
@@ -67,7 +58,13 @@ class GUI_Manager:
 		self.display2.config(background="#cdcdcd")
 		self.display2.grid(row=0, column=1,sticky="N", padx=20, pady=10) #Display 2
 
-		self.list_color = [["red","violet"],["blue","green"],["orange","black"]]
+		self.cmaps = OrderedDict()
+
+		self.cmaps['Sequential'] = [
+			'Reds', 'Purples', 'Blues', 'Greens', 'Oranges', 'Greys',
+			'YlOrBr', 'YlOrRd', 'OrRd', 'PuRd', 'RdPu', 'BuPu',
+			'GnBu', 'PuBu', 'YlGnBu', 'PuBuGn', 'BuGn', 'YlGn']
+		# self.list_color = [["red","violet"],["blue","green"],["orange","black"]]
 		self.norm = matplotlib.colors.Normalize(vmin=-90, vmax=-20)
 		self.color_dict = {}
 		i = 0
@@ -81,11 +78,14 @@ class GUI_Manager:
 			ap_cbs[name]['command'] = lambda w=ap_cbs[name]: self.upon_select(w)
 			
 			ap_cbs[name].grid(row=i, sticky=W)
-			ap_cbs[name].config(fg=self.list_color[col][0])
-			i = i+1
 			self.color_dict[name] = col
+			cmap = plt.get_cmap(self.cmaps.items()[0][1][self.color_dict[name]])
+			color = cmap(self.norm(-20))[:3]
+			print(color,color[2]*255,color[1]*255,color[0]*255)
+			ap_cbs[name].config(fg=matplotlib.colors.to_hex([color[0],color[1],color[2]]))
+			i = i+1
 			col = col+1
-			if col >= len(self.list_color):
+			if col >= len(self.cmaps.items()[0][1]):
 				col = 0
 
 		# read image into matrix.
@@ -108,12 +108,14 @@ class GUI_Manager:
 			self.show_frame(self.image_to_color)
 
 	def draw_circle(self, name_ap):
-	    print("DRAW ", name_ap)
-	    cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", self.list_color[self.color_dict[name_ap]])
+	    # print("DRAW ", name_ap, self.cmaps.items()[0][1][self.color_dict[name_ap]])
+	    # cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", self.cmaps.items()[0][1][self.color_dict[name_ap]])
+	    cmap = plt.get_cmap(self.cmaps.items()[0][1][self.color_dict[name_ap]])
+	    self.clear_label_image()
 	    for key, value in self.map_manager.createMappingAP(self.AP[name_ap]).items():
 			#print(key, value, cmap(self.norm(value))[:3])
+			# print(plt.get_cmap(self.cmaps.items()[0][1][self.color_dict[name_ap]]))
 			color = cmap(self.norm(value))[:3]
-			self.clear_label_image()
 			# print(int(key[0]/self.resolution_value)+(self.w_res/2), int(key[1]/self.resolution_value)+(self.h_res/2))
 			#print("X:",((self.w_res/2)-int(key[0]/self.resolution_value)))
 			x = (self.w_res/2)+(int(key[0]/self.resolution_value)*CONST_RESIZE)
@@ -122,7 +124,7 @@ class GUI_Manager:
 			# circle(image, (cx, cy), 20, (0,0,255), -1)
 			#print(color[0]*255,color[1]*255,color[2]*255)
 			#check http://corecoding.com/utilities/rgb-or-hex-to-float.php
-			self.show_frame(self.image_to_color)
+	    self.show_frame(self.image_to_color)
 
 	def get_info_image(self):
 		# get image properties.
