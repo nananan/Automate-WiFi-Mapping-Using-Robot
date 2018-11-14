@@ -12,7 +12,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.colors
 from matplotlib import cm
-# from colorspacious import cspace_converter
+from colorspacious import cspace_converter
 from collections import OrderedDict
 # from mercator import *
 import re,os
@@ -22,11 +22,14 @@ mapping_man = imp.load_source('Mapping', '../movement/mapping.py')
 
 OFFICE_SVG_PATH = '../navigation/mybot_navigation/maps/ufficio.pgm'
 FILE_OFFICE_PATH = '../navigation/mybot_navigation/maps/ufficio.yaml'
-
+IMAGE_ICON = 'img/wifi_icon.png'
 # PIXEL = 37.7952755906
 
 CONST_RESIZE = 5
+CONST_RESIZE_CIRCLE = 6
 MAP_SIZE = 50
+MIN_VALUE_FREQUENCY = -90
+MAX_VALUE_FREQUENCY = -20
 
 class GUI_Manager:
 	def __init__(self):
@@ -38,16 +41,15 @@ class GUI_Manager:
 		self.map_manager = mapping_man.Mapping()
 		self.AP = self.map_manager.getAPs()
 		self.AP_enabled = []
+		self.mapping_AP = {}
 
 		#Set up GUI
 		self.window = tk.Tk()  #Makes main window
 		self.window.wm_title("Mapping Tino")
-		imgicon = PhotoImage(file='img/wifi_icon.png')
+		imgicon = PhotoImage(file=IMAGE_ICON)
 		self.window.tk.call('wm','iconphoto', self.window._w, imgicon)
 		self.window.config(background="#cdcdcd")
 		
-		#print(self.window.winfo_x(), self.window.winfo_y())
-		#print(self.window.geometry())
 		#Graphics window
 		self.imageFrame = tk.Frame(self.window, width=600, height=500)
 		self.imageFrame.grid(row=0, column=0, padx=10, pady=10)
@@ -65,7 +67,7 @@ class GUI_Manager:
 			'YlOrBr', 'YlOrRd', 'OrRd', 'PuRd', 'RdPu', 'BuPu',
 			'GnBu', 'PuBu', 'YlGnBu', 'PuBuGn', 'BuGn', 'YlGn']
 		# self.list_color = [["red","violet"],["blue","green"],["orange","black"]]
-		self.norm = matplotlib.colors.Normalize(vmin=-90, vmax=-30)
+		self.norm = matplotlib.colors.Normalize(vmin=MIN_VALUE_FREQUENCY, vmax=MAX_VALUE_FREQUENCY)
 		self.color_dict = {}
 		i = 0
 		col = 0
@@ -80,8 +82,8 @@ class GUI_Manager:
 			ap_cbs[name].grid(row=i, sticky=W)
 			self.color_dict[name] = col
 			cmap = plt.get_cmap(self.cmaps.items()[0][1][self.color_dict[name]])
-			color = cmap(self.norm(-30))[:3]
-			#print(color,color[2]*255,color[1]*255,color[0]*255)
+			color = cmap(self.norm(MAX_VALUE_FREQUENCY))[:3]
+			print(color,color[2]*255,color[1]*255,color[0]*255)
 			ap_cbs[name].config(fg=matplotlib.colors.to_hex([color[0],color[1],color[2]]))
 			i = i+1
 			col = col+1
@@ -94,7 +96,6 @@ class GUI_Manager:
 	def upon_select(self, widget):
 	    print("{}'s value is {}.".format(widget['text'], widget.var.get()))
 	    print(self.AP[widget['text']])
-	    #cv2.circle(self.resized_image,(20,20), 5, (0,0,255), -1)
 	    if widget.var.get() == True:
 			self.AP_enabled.append(widget['text'])
 			self.draw_circle(widget['text'])
@@ -108,21 +109,21 @@ class GUI_Manager:
 			self.show_frame(self.image_to_color)
 
 	def draw_circle(self, name_ap):
-	    # print("DRAW ", name_ap, self.cmaps.items()[0][1][self.color_dict[name_ap]])
 	    # cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", self.cmaps.items()[0][1][self.color_dict[name_ap]])
 	    cmap = plt.get_cmap(self.cmaps.items()[0][1][self.color_dict[name_ap]])
 	    self.clear_label_image()
-	    for key, value in self.map_manager.createMappingAP(self.AP[name_ap]).items():
-			#print(key, value, cmap(self.norm(value))[:3])
-			# print(plt.get_cmap(self.cmaps.items()[0][1][self.color_dict[name_ap]]))
+	    map_tmp = {}
+	    if name_ap in self.mapping_AP:
+			map_tmp = self.mapping_AP[name_ap]
+	    else:
+			map_tmp = self.map_manager.createMappingAP(self.AP[name_ap]).items()
+			self.mapping_AP[name_ap] = map_tmp
+
+	    for key, value in map_tmp:
 			color = cmap(self.norm(value))[:3]
-			# print(int(key[0]/self.resolution_value)+(self.w_res/2), int(key[1]/self.resolution_value)+(self.h_res/2))
-			#print("X:",((self.w_res/2)-int(key[0]/self.resolution_value)))
-			x = (self.w_res/2)+(int(key[0]/self.resolution_value)*CONST_RESIZE)
-			y = (self.h_res/2)-(int(key[1]/self.resolution_value)*CONST_RESIZE)
+			x = (self.w_res/2)+(int(key[0]/self.resolution_value)*CONST_RESIZE_CIRCLE)
+			y = (self.h_res/2)-(int(key[1]/self.resolution_value)*CONST_RESIZE_CIRCLE)
 			cv2.circle(self.image_to_color, (x,y), 4, (color[2]*255,color[1]*255,color[0]*255), -1)
-			# circle(image, (cx, cy), 20, (0,0,255), -1)
-			#print(color[0]*255,color[1]*255,color[2]*255)
 			#check http://corecoding.com/utilities/rgb-or-hex-to-float.php
 	    self.show_frame(self.image_to_color)
 
@@ -135,15 +136,10 @@ class GUI_Manager:
 		print "bpp: " + str(self.bpp)
 
 	def resize_image(self):
-		# resized_image = cv2.resize(m, (w/CONST_RESIZE,h/CONST_RESIZE))
 		center_x = self.w/2
 		center_y = self.h/2
-		# cv2.circle(self.map_image, (int(center_x+0/self.resolution_value),
-		# 	int(center_y-0/self.resolution_value)), 4/CONST_RESIZE, (0,0,255), -1)
-		# print((-102.445/self.resolution_value)/CONST_RESIZE)
 
 		map_center = self.map_image[center_x-MAP_SIZE:center_x+MAP_SIZE, center_y-MAP_SIZE:center_y+MAP_SIZE, :]
-		#print("SHAPE",map_center.shape[0],map_center.shape[1]) #100,100
 		self.resized_image = cv2.resize(map_center, (map_center.shape[0]*CONST_RESIZE,map_center.shape[1]*CONST_RESIZE),
 		 interpolation = cv2.INTER_AREA)
 		self.w_res = map_center.shape[0]*CONST_RESIZE
