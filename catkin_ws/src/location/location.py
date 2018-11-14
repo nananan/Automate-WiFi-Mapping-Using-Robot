@@ -12,7 +12,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.colors
 from matplotlib import cm
-from colorspacious import cspace_converter
+# from colorspacious import cspace_converter
 from collections import OrderedDict
 # from mercator import *
 import re,os
@@ -58,36 +58,36 @@ class GUI_Manager:
 		self.display1.grid(row=0, column=0) #, padx=10, pady=2)  #Display 1
 		self.display2 = tk.Frame(self.window, width = 350, height = 100)
 		self.display2.config(background="#cdcdcd")
-		self.display2.grid(row=0, column=1,sticky="N", padx=20, pady=10) #Display 2
+		self.display2.grid(row=0, column=1,sticky="N", padx=50, pady=10) #Display 2
 
 		self.cmaps = OrderedDict()
 
 		self.cmaps['Sequential'] = [
-			'Reds', 'Purples', 'Blues', 'Greens', 'Oranges', 'Greys',
+			'Oranges', 'Purples', 'Blues', 'Greens', 'Oranges', 'Greys',
 			'YlOrBr', 'YlOrRd', 'OrRd', 'PuRd', 'RdPu', 'BuPu',
 			'GnBu', 'PuBu', 'YlGnBu', 'PuBuGn', 'BuGn', 'YlGn']
-		# self.list_color = [["red","violet"],["blue","green"],["orange","black"]]
+		self.list_color = self.cmaps.items()[0][1]
 		self.norm = matplotlib.colors.Normalize(vmin=MIN_VALUE_FREQUENCY, vmax=MAX_VALUE_FREQUENCY)
 		self.color_dict = {}
 		i = 0
 		col = 0
 		ap_cbs = dict()
 		for name in self.AP:
-			ap_cbs[name] = tk.Checkbutton(self.display2, text=name, onvalue=True, offvalue=False)
+			ap_cbs[name] = tk.Checkbutton(self.display2, text=name, onvalue=True, offvalue=False,font=("Arial",11))
 			ap_cbs[name].config(background="#cdcdcd", borderwidth = 0, highlightthickness = 0)
 			ap_cbs[name].var = tk.BooleanVar()
 			ap_cbs[name]['variable'] = ap_cbs[name].var
 			ap_cbs[name]['command'] = lambda w=ap_cbs[name]: self.upon_select(w)
-			
 			ap_cbs[name].grid(row=i, sticky=W)
+
 			self.color_dict[name] = col
-			cmap = plt.get_cmap(self.cmaps.items()[0][1][self.color_dict[name]])
+			cmap = plt.get_cmap(self.list_color[self.color_dict[name]])
 			color = cmap(self.norm(MAX_VALUE_FREQUENCY))[:3]
 			print(color,color[2]*255,color[1]*255,color[0]*255)
 			ap_cbs[name].config(fg=matplotlib.colors.to_hex([color[0],color[1],color[2]]))
 			i = i+1
 			col = col+1
-			if col >= len(self.cmaps.items()[0][1]):
+			if col >= len(self.list_color):
 				col = 0
 
 		# read image into matrix.
@@ -110,7 +110,7 @@ class GUI_Manager:
 
 	def draw_circle(self, name_ap):
 	    # cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", self.cmaps.items()[0][1][self.color_dict[name_ap]])
-	    cmap = plt.get_cmap(self.cmaps.items()[0][1][self.color_dict[name_ap]])
+	    cmap = plt.get_cmap(self.list_color[self.color_dict[name_ap]])
 	    self.clear_label_image()
 	    map_tmp = {}
 	    if name_ap in self.mapping_AP:
