@@ -12,7 +12,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.colors
 from matplotlib import cm
-from colorspacious import cspace_converter
+# from colorspacious import cspace_converter
 from collections import OrderedDict
 # from mercator import *
 import re,os
@@ -65,7 +65,7 @@ class GUI_Manager:
 			'YlOrBr', 'YlOrRd', 'OrRd', 'PuRd', 'RdPu', 'BuPu',
 			'GnBu', 'PuBu', 'YlGnBu', 'PuBuGn', 'BuGn', 'YlGn']
 		# self.list_color = [["red","violet"],["blue","green"],["orange","black"]]
-		self.norm = matplotlib.colors.Normalize(vmin=-90, vmax=-20)
+		self.norm = matplotlib.colors.Normalize(vmin=-90, vmax=-30)
 		self.color_dict = {}
 		i = 0
 		col = 0
@@ -80,8 +80,8 @@ class GUI_Manager:
 			ap_cbs[name].grid(row=i, sticky=W)
 			self.color_dict[name] = col
 			cmap = plt.get_cmap(self.cmaps.items()[0][1][self.color_dict[name]])
-			color = cmap(self.norm(-20))[:3]
-			print(color,color[2]*255,color[1]*255,color[0]*255)
+			color = cmap(self.norm(-30))[:3]
+			#print(color,color[2]*255,color[1]*255,color[0]*255)
 			ap_cbs[name].config(fg=matplotlib.colors.to_hex([color[0],color[1],color[2]]))
 			i = i+1
 			col = col+1
