@@ -40,7 +40,7 @@ class Mapping:
                 signal = signal + int(i)
                 # print(signal,i)
             map_position[key] = (signal/len(value))
-            # print(map_position[key])
+            #print(map_position[key])
         return map_position
 
     # def getMapping(self):

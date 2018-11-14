@@ -5,7 +5,7 @@ from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from geometry_msgs.msg import PoseStamped
 
 import imp
-db_man = imp.load_source('DB_Manager', '/home/wallf/git/Cinnamon/db.py')
+db_man = imp.load_source('DB_Manager', '../cinnamon/db.py')
 
 from collections import OrderedDict
 
@@ -39,7 +39,7 @@ if __name__ == '__main__':
 		waypoint_controller.spin()
 
 		# Sleep to give the last log messages time to be sent
-		rospy.sleep(2) #avevo messo 10 prima, ma siccome è solo alla fine forse va bene anche 2
+		rospy.sleep(2) #avevo messo 10 prima,
 
 	except rospy.ROSInterruptException:
 		rospy.loginfo("Ctrl-C caught. Quitting")

@@ -73,7 +73,7 @@ class DB_Manager:
 
 	def select_Waypoints(self):
 		cursor = self.db.cursor()
-		sql = "select * from Waypoints where AP is NULL"
+		sql = "select * from Waypoints"
 		waypoints_list = cursor.execute(sql)
 		return waypoints_list
 	

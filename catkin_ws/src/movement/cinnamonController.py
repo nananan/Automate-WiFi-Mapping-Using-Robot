@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 
-#import rospy
+import rospy
 from scapy.all import *
 
 import os, argparse, sys, signal
 
-user = "eliana"
 import imp
 db_man = imp.load_source('DB_Manager', '../cinnamon/db.py')
 cinnamon_man = imp.load_source('Sniffer', '../cinnamon/Sniffer.py')
@@ -15,14 +14,14 @@ from listener import Listen
 class CinnamonController:
 
     def __init__(self):
-        #rospy.init_node('cinnamon_controller', anonymous=False)
-        #rospy.loginfo("Started ")
+        rospy.init_node('cinnamon_controller', anonymous=False)
+        rospy.loginfo("Started ")
         print("Started")
         self.stopSniff = False
         
-        self.interface = "wlp3s0_mon"
+        self.interface = "wlp2s0_mon"
         self.sniffer = cinnamon_man.Sniffer()
-        #self.rate = rospy.Rate(10)
+        self.rate = rospy.Rate(10)
 
     def startSniff(self):
         print("Start to sniff from "+self.interface)

@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-#import rospy
+import rospy
 from scapy.all import *
 
 import time, datetime
-#from nav_msgs.msg import Odometry
+from nav_msgs.msg import Odometry
 
 from collections import OrderedDict
 user = 'eliana'
@@ -35,9 +35,11 @@ class Sniffer:
 			2457 : 10,
 			2462 : 11,
 			2467 : 12,
-			2472 : 13
+			2472 : 13,
+
+			5180 : 36
 		}
-		#self.pose_subscriber = rospy.Subscriber('odom', Odometry, self.pose_callback)
+		self.pose_subscriber = rospy.Subscriber('odom', Odometry, self.pose_callback)
 	
 	def pose_callback(self, odom):
 		#print(pose)
@@ -54,8 +56,9 @@ class Sniffer:
 		timestamp = datetime.datetime.now().isoformat()
 		record_waypoint = None
 		if ((p.haslayer(Dot11Beacon))):
-			ssid	   = p[Dot11Elt].info
-			bssid	  = p[Dot11FCS].addr3	
+			p.show() 
+			ssid = p[Dot11Elt].info
+			bssid = p[RadioTap].addr3	
 			#channel = 'n/a'
 			# if len(p[Dot11Elt:3].info) == 1:
 			# print(p[Dot11Elt:3].ID)
@@ -67,8 +70,8 @@ class Sniffer:
 			capability = p.sprintf("{Dot11Beacon:%Dot11Beacon.cap%}\
 					{Dot11ProbeResp:%Dot11ProbeResp.cap%}")
 
-			type_ = enum_man.Enum_Type.type_packet[p[Dot11FCS].type]
-			subtype = enum_man.Enum_Type.subtypes_management[p[Dot11FCS].subtype]
+			type_ = enum_man.Enum_Type.type_packet[p[RadioTap].type]
+			subtype = enum_man.Enum_Type.subtypes_management[p[RadioTap].subtype]
 
 			#signal_decoded = ord(p.notdecoded[-4:-3])
 			#info = p.sprintf("802.11 %Dot11.type% %Dot11.subtype% %RadioTap.dBm_AntSignal% %Dot11.pw-mgt% %Dot11.addr2% > %Dot11.addr1%")
@@ -89,18 +92,18 @@ class Sniffer:
 				('strength', packet_signal),
 				('timestamp', timestamp)
 			])
-			#if self.odom is not None:
-			record_waypoint = OrderedDict([
-				("position_x", self.x),# self.odom.pose.pose.position.x),
-				("position_y", 1),#self.odom.pose.pose.position.y),
-				("position_z", 1),#self.odom.pose.pose.position.z),
-				("orientation_x", 1),#self.odom.pose.pose.orientation.x),
-				("orientation_y", 1),#self.odom.pose.pose.orientation.y),
-				("orientation_z", 1),#self.odom.pose.pose.orientation.z),
-				("orientation_w", 1),#self.odom.pose.pose.orientation.w),
-				("AP", bssid),
-				("strength", packet_signal)
-			])
+			if self.odom is not None:
+				record_waypoint = OrderedDict([
+					("position_x", self.odom.pose.pose.position.x),
+					("position_y", self.odom.pose.pose.position.y),
+					("position_z", self.odom.pose.pose.position.z),
+					("orientation_x", self.odom.pose.pose.orientation.x),
+					("orientation_y", self.odom.pose.pose.orientation.y),
+					("orientation_z", self.odom.pose.pose.orientation.z),
+					("orientation_w", self.odom.pose.pose.orientation.w),
+					("AP", bssid),
+					("strength", packet_signal)
+				])
 			#pose_list = list(record_waypoint.items())[:6]
 			#record_string = "".join(key[0]+"= "+str(key[1])+"," for key in pose_list)[:-1]
 			
@@ -113,8 +116,8 @@ class Sniffer:
 				#print("SIGNAL: ", signal_decoded)
 				if packet_signal is not None:
 					self.DB_Man.update_signal_AP(packet_signal, bssid)
-					#if self.odom is not None and record_waypoint is not None:
-					if not self.DB_Man.exists_Waypoint_AP(bssid, packet_signal):
+					if self.odom is not None and record_waypoint is not None:
+						#if not self.DB_Man.exists_Waypoint_AP(bssid, packet_signal):
 						self.x = self.x+1
 						self.DB_Man.insert_Waypoint_AP(record_waypoint)
 					#pose_list = list(record_waypoint.items())[:7]

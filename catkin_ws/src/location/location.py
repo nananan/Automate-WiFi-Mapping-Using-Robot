@@ -11,7 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors
 # from mercator import *
-import re
+import re,os
 import imp
 mapping_man = imp.load_source('Mapping', '../movement/mapping.py')
 
@@ -51,10 +51,12 @@ class GUI_Manager:
 		#Set up GUI
 		self.window = tk.Tk()  #Makes main window
 		self.window.wm_title("Mapping Tino")
+		imgicon = PhotoImage(file='img/wifi_icon.png')
+		self.window.tk.call('wm','iconphoto', self.window._w, imgicon)
 		self.window.config(background="#cdcdcd")
 		
-		print(self.window.winfo_x(), self.window.winfo_y())
-		print(self.window.geometry())
+		#print(self.window.winfo_x(), self.window.winfo_y())
+		#print(self.window.geometry())
 		#Graphics window
 		self.imageFrame = tk.Frame(self.window, width=600, height=500)
 		self.imageFrame.grid(row=0, column=0, padx=10, pady=10)
@@ -102,18 +104,18 @@ class GUI_Manager:
 			self.image_to_color = self.resized_image.copy()
 			for i in self.AP_enabled:
 				self.draw_circle(i)
-				print(i)
+				#print(i)
 			self.show_frame(self.image_to_color)
 
 	def draw_circle(self, name_ap):
 	    print("DRAW ", name_ap)
 	    cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", self.list_color[self.color_dict[name_ap]])
 	    for key, value in self.map_manager.createMappingAP(self.AP[name_ap]).items():
-			print(key, value, cmap(self.norm(value))[:3])
+			#print(key, value, cmap(self.norm(value))[:3])
 			color = cmap(self.norm(value))[:3]
 			self.clear_label_image()
 			# print(int(key[0]/self.resolution_value)+(self.w_res/2), int(key[1]/self.resolution_value)+(self.h_res/2))
-			print("X:",((self.w_res/2)-int(key[0]/self.resolution_value)))
+			#print("X:",((self.w_res/2)-int(key[0]/self.resolution_value)))
 			x = (self.w_res/2)+(int(key[0]/self.resolution_value)*CONST_RESIZE)
 			y = (self.h_res/2)-(int(key[1]/self.resolution_value)*CONST_RESIZE)
 			cv2.circle(self.image_to_color, (x,y), 4, (color[2]*255,color[1]*255,color[0]*255), -1)
