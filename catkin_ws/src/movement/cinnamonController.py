@@ -6,7 +6,7 @@ from scapy.all import *
 import os, argparse, sys, signal
 
 import imp
-db_man = imp.load_source('DB_Manager', '../cinnamon/db.py')
+# db_man = imp.load_source('DB_Manager', '../cinnamon/db.py')
 cinnamon_man = imp.load_source('Sniffer', '../cinnamon/Sniffer.py')
 
 from listener import Listen

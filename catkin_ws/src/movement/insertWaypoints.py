@@ -11,7 +11,7 @@ from collections import OrderedDict
 
 class WaypointsController:
 	def __init__(self):
-		self.db_manager = db_man.DB_Manager()
+		self.db_manager = db_man.DB_Manager.getInstance()
 
 		rospy.init_node('waypoint_controller', anonymous=False)
 		rospy.loginfo("Started ")

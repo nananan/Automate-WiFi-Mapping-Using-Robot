@@ -70,7 +70,7 @@ if __name__ == '__main__':
 		rospy.init_node('nav_test', anonymous=False)
 		navigator = GoToPose()
 		count = 1
-		DB_Man = db_man.DB_Manager()
+		DB_Man = db_man.DB_Manager.getInstance()
 		waypoints = DB_Man.select_Waypoints()
 		for item in waypoints:
 			print(item)

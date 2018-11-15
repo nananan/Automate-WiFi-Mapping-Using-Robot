@@ -11,7 +11,7 @@ from operator import itemgetter
 
 class Mapping:
     def __init__(self):
-        self.DB_Man = db_man.DB_Manager()
+        self.DB_Man = db_man.DB_Manager.getInstance()
         # self.APs = []
 
     def getAPs(self):
@@ -46,20 +46,20 @@ class Mapping:
     # def getMapping(self):
     #     return self.maps
 
-    def color(self):
-        list_color = [["red","violet"],["blue","green"],["orange","black"]]
-        # x,y,c = zip(*np.random.rand(30,3)*90-1)
-        print(map(itemgetter(0), self.map_position))
-        cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", list_color[0])
-        norm = matplotlib.colors.Normalize(vmin=-90, vmax=-20)
-        for key, value in self.map_position.items():
-            print(key, value, cmap(norm(value))[:3])
-            print(norm(value))
+    # def color(self):
+    #     list_color = [["red","violet"],["blue","green"],["orange","black"]]
+    #     # x,y,c = zip(*np.random.rand(30,3)*90-1)
+    #     print(map(itemgetter(0), self.map_position))
+    #     cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", list_color[0])
+    #     norm = matplotlib.colors.Normalize(vmin=-90, vmax=-20)
+    #     for key, value in self.map_position.items():
+    #         print(key, value, cmap(norm(value))[:3])
+    #         print(norm(value))
         
-        norm=plt.Normalize(-30,-90)
-        plt.scatter(map(itemgetter(0), self.map_position),map(itemgetter(1), self.map_position),c=self.map_position.values(), cmap=cmap, norm=norm)
-        plt.colorbar()
-        plt.show()
+    #     norm=plt.Normalize(-30,-90)
+    #     plt.scatter(map(itemgetter(0), self.map_position),map(itemgetter(1), self.map_position),c=self.map_position.values(), cmap=cmap, norm=norm)
+    #     plt.colorbar()
+    #     plt.show()
         # x = np.linspace(0, 2*np.pi, 64)
         # y = np.cos(x) 
         # plt.figure()
@@ -76,4 +76,4 @@ if __name__ == "__main__":
     mapping.getAPs()
     mapping.createMappingAP("ce:c0:79:5e:db:e8")
     # mapping.mapping()
-    mapping.color()
+    # mapping.color()

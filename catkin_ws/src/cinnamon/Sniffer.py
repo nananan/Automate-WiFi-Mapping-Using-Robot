@@ -20,7 +20,7 @@ class Sniffer:
 		self.y = 1
 		#rospy.init_node('sniffer', anonymous=False)
 		#rospy.loginfo("Started ")
-		self.DB_Man = db_man.DB_Manager()
+		self.DB_Man = db_man.DB_Manager.getInstance()
 		self.odom=None
 		self.channel = {
 			2412 : 1,

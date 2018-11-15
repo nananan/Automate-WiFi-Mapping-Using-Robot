@@ -7,8 +7,22 @@ from collections import OrderedDict
 # Open database connection
 #db = MySQLdb.connect("localhost","root","root","TESTDB" )
 class DB_Manager:
-	
-	db = pyodbc.connect("DRIVER={myodbc_mysql}; SERVER=localhost; PORT=3306;DATABASE=cinnamon; UID=root; PWD=root")
+	__instance = None
+	def __init__(self):
+		""" Virtually private constructor. """
+		if DB_Manager.__instance != None:
+			raise Exception("This class is already initialize!")
+		else:
+			DB_Manager.__instance = self
+			self.db = pyodbc.connect("DRIVER={myodbc_mysql}; SERVER=localhost; PORT=3306;DATABASE=cinnamon; UID=root; PWD=root")
+
+	@staticmethod
+	def getInstance():
+		""" Static access method. """
+		if DB_Manager.__instance == None:
+			DB_Manager()
+		return DB_Manager.__instance 
+
 
 	def insert_Ap(self, record):
 		cursor = self.db.cursor()
