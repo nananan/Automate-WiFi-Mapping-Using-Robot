@@ -19,7 +19,7 @@ class CinnamonController:
         print("Started")
         self.stopSniff = False
         
-        self.interface = "wlp2s0_mon"
+        self.interface = "wlxc4e984de0605"
         self.sniffer = cinnamon_man.Sniffer()
         self.rate = rospy.Rate(10)
 
