@@ -68,19 +68,19 @@ void joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
 //Motor control
 
 	// the speed_left and speed_right parameters have to be between -100 and +100. The joy->axes value is between -1 and 1.
-	speed_left = joy->axes[1] * 100;
-	speed_right = joy->axes[1] * 100;
-	speed_left += -joy->axes[0] * 100;
-	speed_right += joy->axes[0] * 100;
+	speed_left = joy->axes[1] * 30;
+	speed_right = joy->axes[1] * 30;
+	speed_left += -joy->axes[0] * 30;
+	speed_right += joy->axes[0] * 30;
 
-	if(speed_right >100)
-		speed_right = 100;
-	if(speed_right < -100)
-		speed_right = -100;
-	if(speed_left >100)
-		speed_left = 100;
-	if(speed_left < -100)
-		speed_left = -100;
+	if(speed_right >30)
+		speed_right = 30;
+	if(speed_right < -30)
+		speed_right = -30;
+	if(speed_left >30)
+		speed_left = 30;
+	if(speed_left < -30)
+		speed_left = -30;
 
     corobot_msgs::MotorCommand msg;
     msg.leftSpeed = speed_left;

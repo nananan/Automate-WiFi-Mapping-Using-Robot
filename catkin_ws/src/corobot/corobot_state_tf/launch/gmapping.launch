@@ -1,6 +1,6 @@
 <launch>
 
-<param name="/use_sim_time" value="true"/>
+<param name="/use_sim_time" value="false"/>
 
 <arg name="Explorer" value="0"/> <!-- 1 if you have a Corobot Explorer, 0 if you have a Corobot Classic -->
 
@@ -46,10 +46,10 @@
 		<param name="publish_odom_tf" type="bool" value="1"/>
 	</node>-->
 	
-	<node pkg="tf" type="static_transform_publisher" name="map_2_odom" args="0 0 0 0 0 0 map odom 100"/>
+	<!--<node pkg="tf" type="static_transform_publisher" name="map_2_odom" args="0 0 0 0 0 0 map odom 100"/> LA CREA GMAPPING-->
 	<!--<node pkg="rviz" name="rviz" type="rviz" args="-d $(find corobot_state_tf)/launch/gmapping.vcg"/> -->
 
-	<node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
+	<!--<node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
 		<remap from="odom" to="odom"/>
     		<param name="output_frame" value="odom"/>
 		<param name="freq" value="20.0"/>
@@ -59,10 +59,10 @@
 		<param name="vo_used" value="false"/>
 		<param name="debug" value="false"/>
 		<param name="self_diagnose" value="false"/>
-  	</node>	
+  	</node>	-->
 
 	<node pkg="gmapping" type="slam_gmapping" name="slam_gmapping">
-		<remap from="base_scan" to="scan"/>
+		<param name="map_frame" value="/map"/>
 		<param name="map_udpate_interval" value="0.1"/>
 		<param name="odom_frame" value="odom"/>
 		<param name="base_frame" value="base_footprint"/>
