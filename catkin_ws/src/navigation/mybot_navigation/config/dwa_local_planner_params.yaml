@@ -15,7 +15,7 @@ DWAPlannerROS:
   max_trans_vel: 0.80
   min_trans_vel: 0.1
 
-  max_rot_vel: 0.55
+  max_rot_vel: 0.65
   min_rot_vel: 0.1
 
   sim_time: 1.7

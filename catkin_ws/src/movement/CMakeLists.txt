@@ -59,9 +59,11 @@ add_dependencies(joystick_control corobot_msgs_gencpp)
 
 ## Declare a C++ executable
 add_executable(c8_odom odometry/c8_odom.cpp)
+add_executable(c8_odom_enc odometry/c8_odom_encoders.cpp)
 add_executable(sendGoals odometry/sendGoals.cpp)
 
 ## Specify libraries to link a library or executable target against
 
 target_link_libraries(c8_odom ${catkin_LIBRARIES})
+target_link_libraries(c8_odom_enc ${catkin_LIBRARIES})
 target_link_libraries(sendGoals ${catkin_LIBRARIES})
