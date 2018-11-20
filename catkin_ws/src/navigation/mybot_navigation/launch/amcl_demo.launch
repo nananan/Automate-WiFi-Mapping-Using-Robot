@@ -1,9 +1,10 @@
 <launch>
 
   <!-- Run the map server -->
- <arg name="map_file" default="ufficio.yaml"/>
- <!--<arg name="map_file" default="mapCorridoio4.yaml"/>-->
- <arg name="map_path" default ="$(find mybot_navigation)/maps"/>
+ <!--<arg name="map_file" default="ufficio.yaml"/>
+ <arg name="map_path" default ="$(find mybot_navigation)/maps"/>-->
+ <arg name="map_file" default="corridoio_all_good.yaml"/>
+ <arg name="map_path" default ="$(find mybot_navigation)/map_cubo"/>
  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_path)/$(arg map_file)" />
 
   <!--- Run AMCL -->

@@ -53,7 +53,7 @@ from Phidgets.Devices.Encoder import Encoder
 import numpy
 from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus, KeyValue
 
-motors_inverted = True # parameter. True if the motors have been inverted, meaning that index 1 is left and 0 is right
+motors_inverted = False # parameter. True if the motors have been inverted, meaning that index 1 is left and 0 is right
 encoders_inverted = False # parameter. True if the encoders have been inverted, meaning that index 1 is left and 0 is right
 stop_when_obstacle = False # use the motors current and encoders to detect if the robot bumped a wall and stop the motors
 
@@ -525,10 +525,9 @@ def setupMoveService():
     global motorControl, encoders, minAcceleration, maxAcceleration, timer, motors_inverted, phidget1065, leftWheels, posdataPub, leftEncoderPub, rightEncoderPub, stop_when_obstacle, diagnosticPub
     timer = 0
     
-    motors_inverted = rospy.get_param('~motors_inverted', True)
+    motors_inverted = rospy.get_param('~motors_inverted', False)
     encoders_inverted = rospy.get_param('~encoders_inverted', False)
     stop_when_obstacle = rospy.get_param('~stop_when_obstacle', False)
-    print("MOOOOT",motors_inverted)
     # initialize the phidgets boards
     initMotorAndEncoderBoards() 
 

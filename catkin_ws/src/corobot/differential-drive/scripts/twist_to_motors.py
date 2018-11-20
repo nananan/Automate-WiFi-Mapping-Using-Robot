@@ -49,7 +49,7 @@ class TwistToMotors():
         self.timeout_ticks = 4 #rospy.get_param("~timeout_ticks", 2)
         self.left = 0
         self.right = 0
-        self.motors_inverted = True
+        self.motors_inverted = False
         
     #############################################################
     def spin(self):
@@ -76,26 +76,29 @@ class TwistToMotors():
         # dr = (r - l) / w
         # rospy.loginfo("FIRST publishing: (%f, %f)", self.dx, self.dr) 
         if self.dx == 0:
-	     	if self.motors_inverted:
+	     	'''if self.motors_inverted:
      			self.right = -(self.dr*self.w / self.wheel_radius)
-	     	else:
-	     		self.right = self.dr*self.w / self.wheel_radius
+	     	else:'''
+     		self.right = self.dr*self.w / self.wheel_radius
         	self.left = (-1)*self.right
         elif self.dr == 0:
         	self.left = self.right = self.dx
         else:
-        	if self.motors_inverted:
+        	'''if self.motors_inverted:
 		     	self.left = self.dx+self.w *self.dr /self.wheel_radius
 		     	self.right = self.dx-self.w*self.dr / self.wheel_radius
-        	else:
-		     	self.left = self.dx-self.w *self.dr /self.wheel_radius
-		     	self.right = self.dx+self.w*self.dr / self.wheel_radius
+        	else:'''
+	     	self.left = self.dx-self.w *self.dr /self.wheel_radius
+	     	self.right = self.dx+self.w*self.dr / self.wheel_radius
 
         #rospy.loginfo("publishing: (%f, %f)", self.left, self.right) 
-                
-        self.pub_lmotor.publish(-self.left)
-        self.pub_rmotor.publish(-self.right)
-            
+        '''if self.motors_inverted:
+	     	self.pub_lmotor.publish(-self.left)
+	     	self.pub_rmotor.publish(-self.right)
+        else:'''
+        self.pub_lmotor.publish(self.left)
+        self.pub_rmotor.publish(self.right)
+		     
         self.ticks_since_target += 1
 
 
