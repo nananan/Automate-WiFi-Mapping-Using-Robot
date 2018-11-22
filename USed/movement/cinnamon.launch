@@ -1,4 +1,0 @@
-<launch>
-    <node pkg="movement" name="cinnamonController" type="cinnamonController.py" output="screen" launch-prefix="sudo -E"/>
-
-</launch>
