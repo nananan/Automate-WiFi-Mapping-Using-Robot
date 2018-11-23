@@ -20,8 +20,8 @@ import imp
 mapping_man = imp.load_source('Mapping', '../movement/mapping.py')
 
 
-OFFICE_SVG_PATH = '../navigation/mybot_navigation/maps/ufficio.pgm'
-FILE_OFFICE_PATH = '../navigation/mybot_navigation/maps/ufficio.yaml'
+OFFICE_SVG_PATH = '../navigation/mybot_navigation/map_cubo/corridoio_all_good.pgm'
+FILE_OFFICE_PATH = '../navigation/mybot_navigation/map_cubo/corridoio_all_good.yaml'
 IMAGE_ICON = 'img/wifi_icon.png'
 # PIXEL = 37.7952755906
 

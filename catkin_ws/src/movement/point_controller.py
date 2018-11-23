@@ -53,8 +53,8 @@ class PointController:
                 marker.color.g = color[1]
                 marker.color.b = color[2]
                 #marker.pose.orientation.w = 1.0
-                marker.pose.position.x = key[0]
-                marker.pose.position.y = key[1] 
+                marker.pose.position.x = (-1)*key[0]
+                marker.pose.position.y = (-1)*key[1] 
                 marker.pose.position.z = 0
                 # marker.lifetime = rospy.Duration(0)
                 
