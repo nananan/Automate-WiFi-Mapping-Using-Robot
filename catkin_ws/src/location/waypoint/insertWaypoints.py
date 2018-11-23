@@ -5,7 +5,7 @@ from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from geometry_msgs.msg import PoseStamped
 
 import imp
-db_man = imp.load_source('DB_Manager', '/home/wallf/git/Tesi/catkin_ws/src/cinnamon/db.py')
+db_man = imp.load_source('DB_Manager', '/home/wallf/git/Tesi/catkin_ws/src/cinnamon/src/db.py')
 
 from collections import OrderedDict
 

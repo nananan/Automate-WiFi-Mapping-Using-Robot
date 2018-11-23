@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import imp
-db_man = imp.load_source('DB_Manager', '/home/wallf/git/Tesi/catkin_ws/src/cinnamon/db.py')
+db_man = imp.load_source('DB_Manager', '/home/wallf/git/Tesi/catkin_ws/src/cinnamon/src/db.py')
 
 import numpy as np
 import matplotlib.pyplot as plt

@@ -17,7 +17,7 @@ from collections import OrderedDict
 # from mercator import *
 import re,os
 import imp
-mapping_man = imp.load_source('Mapping', '../movement/mapping.py')
+mapping_man = imp.load_source('Mapping', 'waypoint/mapping.py')
 
 
 OFFICE_SVG_PATH = '../navigation/mybot_navigation/map_cubo/corridoio_all_good.pgm'
