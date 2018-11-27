@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import imp
-db_man = imp.load_source('DB_Manager', '/home/wallf/git/Tesi/catkin_ws/src/cinnamon/src/db.py')
+db_man = imp.load_source('DB_Manager', '/home/eliana/git/Tesi/catkin_ws/src/cinnamon/src/db.py')
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -21,9 +21,14 @@ class Mapping:
 
     def createMappingAP(self, mac_address):
         maps = {}
-        postions = self.DB_Man.select_Waypoints_AP(mac_address)
-        for pos in postions:
+        maps_AP = {}
+        positions = self.DB_Man.select_Waypoints_AP(mac_address)
+        for pos in positions:
             #print(pos)
+            if pos[8] not in maps_AP:
+                maps_AP[pos[8]] = [pos[9]]
+            else:
+                maps_AP[pos[8]].append(pos[9])
             key = (pos[1],pos[2],pos[3])
             if key not in maps:
                 maps[key] = [pos[9]]
@@ -32,7 +37,11 @@ class Mapping:
     
     #def mapping(self):
         map_position = {}
+        map_min_max_AP = {}
         #signal = 0
+        for key, value in maps_AP.items():
+            map_min_max_AP[key] = (min(value), max(value))
+            # print("MINIMOOOOOOOOOOO",key, max(value))
         for key, value in maps.items():
             signal = 0
             # print(key)
@@ -41,7 +50,8 @@ class Mapping:
                 # print(signal,i)
             map_position[key] = (signal/len(value))
             #print(map_position[key])
-        return map_position
+        
+        return (map_position, map_min_max_AP)
 
     # def getMapping(self):
     #     return self.maps

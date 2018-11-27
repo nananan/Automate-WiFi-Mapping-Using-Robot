@@ -1,8 +1,13 @@
 #!/usr/bin/env python
 
 import cv2
-import Tkinter as tk
-from Tkinter import *
+from sys import version_info
+if version_info.major == 2: # Python 2.x
+	import Tkinter as tk
+	from Tkinter import *
+elif version_info.major == 3: # Python 3.x
+	import tkinter as tk
+	from tkinter import *
 from PIL import Image
 from PIL import ImageTk
 
@@ -25,18 +30,35 @@ FILE_OFFICE_PATH = '../navigation/mybot_navigation/map_cubo/corridoio_all_good.y
 IMAGE_ICON = 'img/wifi_icon.png'
 # PIXEL = 37.7952755906
 
-CONST_RESIZE = 5
-CONST_RESIZE_CIRCLE = 6
-MAP_SIZE = 50
-MIN_VALUE_FREQUENCY = -120
-MAX_VALUE_FREQUENCY = -20
+CONST_RESIZE = 1
+CONST_RESIZE_CIRCLE = 1
+MAP_SIZE = 400
+MIN_VALUE_FREQUENCY = -80
+MAX_VALUE_FREQUENCY = -50
 
 class GUI_Manager:
+	def reverse_colourmap(self,cmap, name = 'my_cmap_r'):
+		reverse = []
+		k = []   
+
+		for key in cmap._segmentdata:    
+			k.append(key)
+			channel = cmap._segmentdata[key]
+			data = []
+
+			for t in channel:                    
+				data.append((1-t[0],t[2],t[1]))            
+			reverse.append(sorted(data))    
+
+		LinearL = dict(zip(k,reverse))
+		my_cmap_r = mpl.colors.LinearSegmentedColormap(name, LinearL) 
+		return my_cmap_r
+
 	def __init__(self):
 		#Get resolution value
 		self.resolution_value = self.get_resolution()
 		print(self.resolution_value)
-		
+		self.get_center()
 		#Create APs list
 		self.map_manager = mapping_man.Mapping()
 		self.AP = self.map_manager.getAPs()
@@ -51,21 +73,23 @@ class GUI_Manager:
 		self.window.config(background="#cdcdcd")
 		
 		#Graphics window
-		self.imageFrame = tk.Frame(self.window, width=600, height=500)
+		self.imageFrame = tk.Frame(self.window, width=900, height=500)
 		self.imageFrame.grid(row=0, column=0, padx=10, pady=10)
 
-		self.display1 = tk.Label(self.imageFrame,borderwidth = 0, highlightthickness = 0)
+		self.display1 = tk.Label(self.imageFrame,borderwidth = 0, highlightthickness = 0)#, width=800, height=500)
 		self.display1.grid(row=0, column=0) #, padx=10, pady=2)  #Display 1
 		self.display2 = tk.Frame(self.window, width = 350, height = 100)
 		self.display2.config(background="#cdcdcd")
 		self.display2.grid(row=0, column=1,sticky="N", padx=50, pady=10) #Display 2
 
+		self.tuple_mapping = dict()
 		self.cmaps = OrderedDict()
 
 		self.cmaps['Sequential'] = [
 			'Oranges', 'Purples', 'Blues', 'Greens', 'Oranges', 'Greys',
 			'YlOrBr', 'YlOrRd', 'OrRd', 'PuRd', 'RdPu', 'BuPu',
 			'GnBu', 'PuBu', 'YlGnBu', 'PuBuGn', 'BuGn', 'YlGn']
+		# self.cmaps.items()[0][1]['Oranges'] = self.reverse_colourmap(self.cmaps.items()[0][1]['Oranges'])
 		self.list_color = self.cmaps.items()[0][1]
 		self.norm = matplotlib.colors.Normalize(vmin=MIN_VALUE_FREQUENCY, vmax=MAX_VALUE_FREQUENCY)
 		self.color_dict = {}
@@ -90,23 +114,79 @@ class GUI_Manager:
 			if col >= len(self.list_color):
 				col = 0
 
+		self.display3 = tk.Frame(self.display2, width = 250, height = 50)
+		self.display3.config(background="#cdcdcd")
+		self.display3.grid(row=i, column=0, sticky="N", pady=40) #Display 3
+		label_freq = Label(self.display3, text="Frequency:")
+		label_freq.grid(row=0)
+		label_freq.configure(background="#cdcdcd", pady=10,font=('Arial', 11, 'bold'))
+		i = i+1
+		butt_freq= tk.Checkbutton(self.display3, text="Use frequency [0,-100]", onvalue=True, offvalue=False,font=("Arial",11))
+		butt_freq.config(background="#cdcdcd", borderwidth = 0, highlightthickness = 0)
+		butt_freq.var = tk.BooleanVar()
+		butt_freq['variable'] = butt_freq.var
+		butt_freq['command'] = lambda w=butt_freq: self.select_frequency(w)
+		butt_freq.grid(row=i, sticky=W)
+		i = i+1
+
+		self.display4 = tk.Frame(self.display2, width = 250, height = 50)
+		self.display4.config(background="#cdcdcd")
+		self.display4.grid(row=i, column=0,sticky="N") #Display 4
+
 		# read image into matrix.
 		self.map_image = cv2.imread(OFFICE_SVG_PATH)
+		self.image_to_color = self.map_image
+		self.useStandardFreq = False
+		self.index_label_freq = 0
+		self.label = dict()
+
+	def select_frequency(self,widget):
+		self.useStandardFreq = widget.var.get()
+		if self.useStandardFreq == True:
+			for wid in self.display4.winfo_children():
+				wid.destroy()
+		print("BUTTONN {}'s value is {}.".format(widget['text'], widget.var.get()))
+		self.clear_label_image()
+		self.image_to_color = self.map_image.copy()
+		for i in self.AP_enabled:
+			if self.useStandardFreq == False:
+				self.create_label_frequency(i, self.AP[i])
+			self.draw_circle(i)
+			#print(i)
+		self.resize_image()
+		self.show_frame(self.resized_image)
 
 	def upon_select(self, widget):
 	    print("{}'s value is {}.".format(widget['text'], widget.var.get()))
-	    print(self.AP[widget['text']])
+	    address = self.AP[widget['text']]
 	    if widget.var.get() == True:
 			self.AP_enabled.append(widget['text'])
 			self.draw_circle(widget['text'])
+			self.create_label_frequency(widget['text'], address)
 	    else:
 			self.clear_label_image()
 			self.AP_enabled.remove(widget['text'])
-			self.image_to_color = self.resized_image.copy()
+			self.image_to_color = self.map_image.copy()
+			# self.display4.grid_forget()
+			for wid in self.display4.winfo_children():
+				wid.destroy()
+			self.index_label_freq = 0
 			for i in self.AP_enabled:
+				self.create_label_frequency(i, self.AP[i])
 				self.draw_circle(i)
 				#print(i)
-			self.show_frame(self.image_to_color)
+			self.resize_image()
+			self.show_frame(self.resized_image)
+
+	def create_label_frequency(self, name_ap, address):
+		print("LABEL",name_ap,address)
+		print("INDEX ",self.index_label_freq)
+		label_str = name_ap +': ['+self.tuple_mapping[name_ap][1][address][1]+','+self.tuple_mapping[name_ap][1][address][0]+']'
+		self.label[name_ap] = Label(self.display4, text=label_str)
+		self.label[name_ap].grid(row=self.index_label_freq)
+		self.index_label_freq= self.index_label_freq+1
+		self.label[name_ap].configure(background="#cdcdcd", pady=2)
+		self.window.grid_propagate(0)
 
 	def draw_circle(self, name_ap):
 	    # cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", self.cmaps.items()[0][1][self.color_dict[name_ap]])
@@ -116,16 +196,29 @@ class GUI_Manager:
 	    if name_ap in self.mapping_AP:
 			map_tmp = self.mapping_AP[name_ap]
 	    else:
-			map_tmp = self.map_manager.createMappingAP(self.AP[name_ap]).items()
+			self.tuple_mapping[name_ap] = self.map_manager.createMappingAP(self.AP[name_ap])
+			map_tmp = self.tuple_mapping[name_ap][0].items()
 			self.mapping_AP[name_ap] = map_tmp
-
+	    if not self.useStandardFreq:
+			MIN_VALUE_FREQUENCY = int(self.tuple_mapping[name_ap][1][self.AP[name_ap]][1])
+			MAX_VALUE_FREQUENCY = int(self.tuple_mapping[name_ap][1][self.AP[name_ap]][0])
+	    else:
+			MIN_VALUE_FREQUENCY = -100
+			MAX_VALUE_FREQUENCY = 0
+	    norm = matplotlib.colors.Normalize(vmin=MIN_VALUE_FREQUENCY,
+			vmax=MAX_VALUE_FREQUENCY)
 	    for key, value in map_tmp:
-			color = cmap(self.norm(value))[:3]
-			x = (self.w_res/2)+(int(key[0]/self.resolution_value)*CONST_RESIZE_CIRCLE)
-			y = (self.h_res/2)-(int(key[1]/self.resolution_value)*CONST_RESIZE_CIRCLE)
-			cv2.circle(self.image_to_color, (x,y), 4, (color[2]*255,color[1]*255,color[0]*255), -1)
+			color = cmap(norm(value))[:3]
+			#3450 tupla
+			# x = self.w/2 - (int(((-1)*key[0])/self.resolution_value))
+			# y = self.h/2 - (int((key[1])/self.resolution_value)) - 350
+			y = self.w/2 - (int((key[0])/self.resolution_value)) 
+			x = self.h/2 - (int((key[1])/self.resolution_value)) 
+			# print("AFTER:", x, y)
+			cv2.circle(self.image_to_color, (x,y), 2, (color[2]*255,color[1]*255,color[0]*255), -1)
+	    self.resize_image()
 			#check http://corecoding.com/utilities/rgb-or-hex-to-float.php
-	    self.show_frame(self.image_to_color)
+	    self.show_frame(self.resized_image)
 
 	def get_info_image(self):
 		# get image properties.
@@ -136,15 +229,19 @@ class GUI_Manager:
 		print "bpp: " + str(self.bpp)
 
 	def resize_image(self):
-		center_x = self.w/2
-		center_y = self.h/2
-
-		map_center = self.map_image[center_x-MAP_SIZE:center_x+MAP_SIZE, center_y-MAP_SIZE:center_y+MAP_SIZE, :]
-		self.resized_image = cv2.resize(map_center, (map_center.shape[0]*CONST_RESIZE,map_center.shape[1]*CONST_RESIZE),
-		 interpolation = cv2.INTER_AREA)
-		self.w_res = map_center.shape[0]*CONST_RESIZE
-		self.h_res = map_center.shape[1]*CONST_RESIZE
-		self.image_to_color = self.resized_image.copy()
+		#center_x = self.w/2
+		#center_y = self.h/2
+		# self.image_to_color = self.map_image.copy()
+		map_center = self.image_to_color[int(self.center_x-MAP_SIZE):int(self.center_x+MAP_SIZE), 
+		int(self.center_y-MAP_SIZE):int(self.center_y+MAP_SIZE), :]
+		r = 700.0 / map_center.shape[1]
+		dim = (700, int(map_center.shape[0] * r))
+		self.resized_image = cv2.resize(map_center, dim, interpolation = cv2.INTER_AREA)
+		# self.resized_image = cv2.resize(map_center, (map_center.shape[0]*CONST_RESIZE,map_center.shape[1]*CONST_RESIZE),
+		#  interpolation = cv2.INTER_AREA)
+		self.w_res = self.resized_image.shape[0]*CONST_RESIZE
+		self.h_res = self.resized_image.shape[1]*CONST_RESIZE
+		# self.image_to_color = self.resized_image.copy()
 		print("RES ",self.w_res, self.h_res) #500,500
 		
 
@@ -169,8 +266,22 @@ class GUI_Manager:
 	    self.display1.config(image='')
 
 	def update(self):
+		rows,cols,bpp = np.shape(self.map_image)
+		M = cv2.getRotationMatrix2D((cols/2,rows/2),270,1)
+		self.map_image = cv2.warpAffine(self.map_image,M,(cols,rows))
+		self.image_to_color = self.map_image.copy()
+		self.resize_image()
 		self.show_frame(self.resized_image)
 		self.window.mainloop()  #Starts GUI
+
+	def get_center(self):
+		pattern = re.compile("origin")
+		for _, line in enumerate(open(FILE_OFFICE_PATH)):
+			for _ in re.finditer(pattern, line):
+				self.center_x = float(line.split(":")[1].split(",")[1:][0])/self.resolution_value
+				print(self.center_x)
+				self.center_y = float(line.split(":")[1].split(",")[1])/self.resolution_value
+				print(self.center_y)
 
 	def get_resolution(self):
 		pattern = re.compile("resolution")
