@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import imp
+import imp, os
 db_man = imp.load_source('DB_Manager', os.path.dirname(os.path.abspath(__file__))+'/../../cinnamon/src/db.py')
 
 import numpy as np

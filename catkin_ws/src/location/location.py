@@ -89,12 +89,12 @@ class GUI_Manager:
 		self.display1.grid(row=0, column=0) #, padx=10, pady=2)  #Display 1
 
 		self.display2_sh = tk.Frame(self.window)
-		self.display2_sh.config(background="#82868a", borderwidth = 0, highlightthickness = 0, width=301, height=502)
+		self.display2_sh.config(background="#82868a", borderwidth = 0, highlightthickness = 0, width=301, height=512)
 		self.display2_sh.grid(row=0, column=1, sticky="N", padx=50, pady=20) #Display 2
 		self.display2_sh.grid_propagate(False)
 
-		self.display2 = tk.Frame(self.window, width = 350, height = 140)
-		self.display2.config(background=BACKGROUND_COLOR_MENU, borderwidth = 1, highlightthickness = 1, width=300, height=500)
+		self.display2 = tk.Frame(self.window)
+		self.display2.config(background=BACKGROUND_COLOR_MENU, borderwidth = 1, highlightthickness = 1, width=300, height=510)
 		self.display2.grid(row=0, column=1, sticky="N", padx=50, pady=20) #Display 2
 		self.display2.grid_propagate(False)
 
