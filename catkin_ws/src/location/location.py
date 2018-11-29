@@ -29,30 +29,38 @@ OFFICE_SVG_PATH = '../navigation/mybot_navigation/map_cubo/corridoio_all_good.pg
 FILE_OFFICE_PATH = '../navigation/mybot_navigation/map_cubo/corridoio_all_good.yaml'
 IMAGE_ICON = 'img/wifi_icon.png'
 # PIXEL = 37.7952755906
-
+BACKGROUND_COLOR = "#a2b6ca" #"#6799c7"
+BACKGROUND_COLOR_MENU = "#d2dbe5"
 CONST_RESIZE = 1
 CONST_RESIZE_CIRCLE = 1
 MAP_SIZE = 400
 MIN_VALUE_FREQUENCY = -80
 MAX_VALUE_FREQUENCY = -50
 
+class MDLabel(tk.Frame):
+
+    def __init__(self, parent=None, **options):
+        tk.Frame.__init__(self, parent, bg=options["sc"])  # sc = shadow color
+        self.label = tk.Label(self, text=options["text"], padx=15, pady=10)
+        self.label.pack(expand=1, fill="both", padx=(0, options["si"]), pady=(0, options["si"]))  # shadow intensit
+
 class GUI_Manager:
-	def reverse_colourmap(self,cmap, name = 'my_cmap_r'):
-		reverse = []
-		k = []   
+	# def reverse_colourmap(self,cmap, name = 'my_cmap_r'):
+	# 	reverse = []
+	# 	k = []   
 
-		for key in cmap._segmentdata:    
-			k.append(key)
-			channel = cmap._segmentdata[key]
-			data = []
+	# 	for key in cmap._segmentdata:    
+	# 		k.append(key)
+	# 		channel = cmap._segmentdata[key]
+	# 		data = []
 
-			for t in channel:                    
-				data.append((1-t[0],t[2],t[1]))            
-			reverse.append(sorted(data))    
+	# 		for t in channel:                    
+	# 			data.append((1-t[0],t[2],t[1]))            
+	# 		reverse.append(sorted(data))    
 
-		LinearL = dict(zip(k,reverse))
-		my_cmap_r = mpl.colors.LinearSegmentedColormap(name, LinearL) 
-		return my_cmap_r
+	# 	LinearL = dict(zip(k,reverse))
+	# 	my_cmap_r = mpl.colors.LinearSegmentedColormap(name, LinearL) 
+	# 	return my_cmap_r
 
 	def __init__(self):
 		#Get resolution value
@@ -68,19 +76,27 @@ class GUI_Manager:
 		#Set up GUI
 		self.window = tk.Tk()  #Makes main window
 		self.window.wm_title("Mapping Tino")
+		self.window.resizable()
+		self.window.maxsize()
 		imgicon = PhotoImage(file=IMAGE_ICON)
 		self.window.tk.call('wm','iconphoto', self.window._w, imgicon)
-		self.window.config(background="#cdcdcd")
+		self.window.config(background=BACKGROUND_COLOR)
 		
 		#Graphics window
 		self.imageFrame = tk.Frame(self.window, width=900, height=500)
 		self.imageFrame.grid(row=0, column=0, padx=10, pady=10)
-
-		self.display1 = tk.Label(self.imageFrame,borderwidth = 0, highlightthickness = 0)#, width=800, height=500)
+		self.display1 = tk.Label(self.imageFrame, borderwidth = 0, highlightthickness = 0)#, width=800, height=500)
 		self.display1.grid(row=0, column=0) #, padx=10, pady=2)  #Display 1
-		self.display2 = tk.Frame(self.window, width = 350, height = 100)
-		self.display2.config(background="#cdcdcd")
-		self.display2.grid(row=0, column=1,sticky="N", padx=50, pady=10) #Display 2
+
+		self.display2_sh = tk.Frame(self.window)
+		self.display2_sh.config(background="#82868a", borderwidth = 0, highlightthickness = 0, width=301, height=502)
+		self.display2_sh.grid(row=0, column=1, sticky="N", padx=50, pady=20) #Display 2
+		self.display2_sh.grid_propagate(False)
+
+		self.display2 = tk.Frame(self.window, width = 350, height = 140)
+		self.display2.config(background=BACKGROUND_COLOR_MENU, borderwidth = 1, highlightthickness = 1, width=300, height=500)
+		self.display2.grid(row=0, column=1, sticky="N", padx=50, pady=20) #Display 2
+		self.display2.grid_propagate(False)
 
 		self.tuple_mapping = dict()
 		self.cmaps = OrderedDict()
@@ -94,63 +110,90 @@ class GUI_Manager:
 		self.norm = matplotlib.colors.Normalize(vmin=MIN_VALUE_FREQUENCY, vmax=MAX_VALUE_FREQUENCY)
 		self.color_dict = {}
 		i = 0
+		label_list_wifi = Label(self.display2, text="List Wireless Source:")
+		label_list_wifi.grid(row=0, sticky="W", pady=3)
+		label_list_wifi.configure(background=BACKGROUND_COLOR_MENU,font=('Arial', 11, 'bold'))
 		col = 0
-		ap_cbs = dict()
+		self.ap_cbs = dict()
 		for name in self.AP:
-			ap_cbs[name] = tk.Checkbutton(self.display2, text=name, onvalue=True, offvalue=False,font=("Arial",11))
-			ap_cbs[name].config(background="#cdcdcd", borderwidth = 0, highlightthickness = 0)
-			ap_cbs[name].var = tk.BooleanVar()
-			ap_cbs[name]['variable'] = ap_cbs[name].var
-			ap_cbs[name]['command'] = lambda w=ap_cbs[name]: self.upon_select(w)
-			ap_cbs[name].grid(row=i, sticky=W)
+			i = i+1
+			self.ap_cbs[name] = tk.Checkbutton(self.display2, text=name, onvalue=True, offvalue=False,font=("Arial",11))
+			self.ap_cbs[name].config(background=BACKGROUND_COLOR_MENU, borderwidth = 0, highlightthickness = 0)
+			self.ap_cbs[name].var = tk.BooleanVar()
+			self.ap_cbs[name]['variable'] = self.ap_cbs[name].var
+			self.ap_cbs[name]['command'] = lambda w=self.ap_cbs[name]: self.upon_select(w)
+			self.ap_cbs[name].grid(row=i, sticky=W)
 
 			self.color_dict[name] = col
 			cmap = plt.get_cmap(self.list_color[self.color_dict[name]])
 			color = cmap(self.norm(MAX_VALUE_FREQUENCY))[:3]
 			print(color,color[2]*255,color[1]*255,color[0]*255)
-			ap_cbs[name].config(fg=matplotlib.colors.to_hex([color[0],color[1],color[2]]))
-			i = i+1
+			self.ap_cbs[name].config(fg=matplotlib.colors.to_hex([color[0],color[1],color[2]]))
+			
 			col = col+1
 			if col >= len(self.list_color):
 				col = 0
 
-		self.display3 = tk.Frame(self.display2, width = 250, height = 50)
-		self.display3.config(background="#cdcdcd")
-		self.display3.grid(row=i, column=0, sticky="N", pady=40) #Display 3
-		label_freq = Label(self.display3, text="Frequency:")
-		label_freq.grid(row=0)
-		label_freq.configure(background="#cdcdcd", pady=10,font=('Arial', 11, 'bold'))
 		i = i+1
-		butt_freq= tk.Checkbutton(self.display3, text="Use frequency [0,-100]", onvalue=True, offvalue=False,font=("Arial",11))
-		butt_freq.config(background="#cdcdcd", borderwidth = 0, highlightthickness = 0)
+		self.display_button = tk.Frame(self.display2, width=250, height=50)
+		self.display_button.config(background=BACKGROUND_COLOR_MENU)
+		self.display_button.grid(row=i, column=0, sticky="E") #Display 3
+		self.display_button.grid_propagate(0)
+		sel_all = Button(self.display_button, command=self.select_all, text="Select All",font=('Arial', 10, 'bold'))
+		sel_all.grid(row=0, column = 0)
+		sel_all.config(relief=FLAT, background=BACKGROUND_COLOR_MENU, borderwidth = 0, highlightthickness = 0)
+		desel_all = Button(self.display_button, command=self.deselect_all, text="Deselect All",font=('Arial', 10, 'bold'))
+		desel_all.grid(row=0, column = 1)
+		desel_all.config(relief=FLAT, background=BACKGROUND_COLOR_MENU, borderwidth = 0, highlightthickness = 0)
+		i = i+1
+		
+		self.display3 = tk.Frame(self.display2, width=250, height=50)
+		self.display3.config(background=BACKGROUND_COLOR_MENU)
+		self.display3.grid(row=i, column=0, sticky="N", pady=3) #Display 3
+		self.display3.grid_propagate(0)
+		label_freq = Label(self.display3, text="Power:")
+		label_freq.grid(row=0, sticky="W", padx=3, pady=3)
+		label_freq.configure(background=BACKGROUND_COLOR_MENU,font=('Arial', 11, 'bold'))
+		i = i+1
+		butt_freq = tk.Checkbutton(self.display3, text="Use Power range [-100,0]", onvalue=True, offvalue=False,font=("Arial",11))
+		butt_freq.config(background=BACKGROUND_COLOR_MENU, borderwidth = 0, highlightthickness = 0)
 		butt_freq.var = tk.BooleanVar()
 		butt_freq['variable'] = butt_freq.var
-		butt_freq['command'] = lambda w=butt_freq: self.select_frequency(w)
-		butt_freq.grid(row=i, sticky=W)
+		butt_freq['command'] = lambda w=butt_freq: self.select_power_streght(w)
+		butt_freq.grid(row=i, sticky="W", padx=10)
 		i = i+1
 
 		self.display4 = tk.Frame(self.display2, width = 250, height = 50)
-		self.display4.config(background="#cdcdcd")
+		self.display4.config(background=BACKGROUND_COLOR_MENU)
 		self.display4.grid(row=i, column=0,sticky="N") #Display 4
 
+		h = "cdcdcd".lstrip('#')
+		col_back = tuple(int(h[i:i+2], 16) for i in (0, 2 ,4))
+		
+		h = BACKGROUND_COLOR.lstrip('#')
+		col_back_new = tuple(int(h[i:i+2], 16) for i in (0, 2 ,4))
+		print(col_back_new[0],col_back_new[1],col_back_new[2])
 		# read image into matrix.
 		self.map_image = cv2.imread(OFFICE_SVG_PATH)
+		self.map_image[np.where((self.map_image == [col_back[2],col_back[1],col_back[0]])
+			.all(axis = 2))] = col_back_new[2],col_back_new[1],col_back_new[0]
+		# cv2.imwrite('output.png', self.map_image)
 		self.image_to_color = self.map_image
 		self.useStandardFreq = False
 		self.index_label_freq = 0
 		self.label = dict()
 
-	def select_frequency(self,widget):
+	def select_power_streght(self,widget):
 		self.useStandardFreq = widget.var.get()
 		if self.useStandardFreq == True:
 			for wid in self.display4.winfo_children():
 				wid.destroy()
-		print("BUTTONN {}'s value is {}.".format(widget['text'], widget.var.get()))
+		# print("BUTTONN {}'s value is {}.".format(widget['text'], widget.var.get()))
 		self.clear_label_image()
 		self.image_to_color = self.map_image.copy()
 		for i in self.AP_enabled:
 			if self.useStandardFreq == False:
-				self.create_label_frequency(i, self.AP[i])
+				self.create_label_power(i, self.AP[i])
 			self.draw_circle(i)
 			#print(i)
 		self.resize_image()
@@ -162,7 +205,7 @@ class GUI_Manager:
 	    if widget.var.get() == True:
 			self.AP_enabled.append(widget['text'])
 			self.draw_circle(widget['text'])
-			self.create_label_frequency(widget['text'], address)
+			self.create_label_power(widget['text'], address)
 	    else:
 			self.clear_label_image()
 			self.AP_enabled.remove(widget['text'])
@@ -172,21 +215,47 @@ class GUI_Manager:
 				wid.destroy()
 			self.index_label_freq = 0
 			for i in self.AP_enabled:
-				self.create_label_frequency(i, self.AP[i])
+				self.create_label_power(i, self.AP[i])
 				self.draw_circle(i)
 				#print(i)
 			self.resize_image()
 			self.show_frame(self.resized_image)
 
-	def create_label_frequency(self, name_ap, address):
-		print("LABEL",name_ap,address)
-		print("INDEX ",self.index_label_freq)
-		label_str = name_ap +': ['+self.tuple_mapping[name_ap][1][address][1]+','+self.tuple_mapping[name_ap][1][address][0]+']'
-		self.label[name_ap] = Label(self.display4, text=label_str)
-		self.label[name_ap].grid(row=self.index_label_freq)
-		self.index_label_freq= self.index_label_freq+1
-		self.label[name_ap].configure(background="#cdcdcd", pady=2)
-		self.window.grid_propagate(0)
+	def create_label_power(self, name_ap, address):
+		# print("LABEL",name_ap,address)
+		# print("INDEX ",self.index_label_freq)
+		if self.useStandardFreq:
+			return
+		else:
+			label_str = name_ap +': ['+self.tuple_mapping[name_ap][1][address][1]+','+self.tuple_mapping[name_ap][1][address][0]+']'
+			self.label[name_ap] = Label(self.display4, text=label_str)
+			self.label[name_ap].grid(row=self.index_label_freq)
+			self.index_label_freq = self.index_label_freq+1
+			cmap = plt.get_cmap(self.list_color[self.color_dict[name_ap]])
+			color = cmap(self.norm(MAX_VALUE_FREQUENCY))[:3]
+			self.label[name_ap].config(fg=matplotlib.colors.to_hex([color[0],color[1],color[2]]))
+			self.label[name_ap].configure(background=BACKGROUND_COLOR_MENU, pady=2)
+			self.window.grid_propagate(0)
+
+	def select_all(self):
+		for ap in self.AP:
+			self.draw_circle(ap)
+			self.ap_cbs[ap].var.set(True)
+			self.AP_enabled.append(ap)
+			self.create_label_power(ap, self.AP[ap])
+
+	def deselect_all(self):
+		self.clear_label_image()
+		self.image_to_color = self.map_image.copy()
+		for wid in self.display4.winfo_children():
+			wid.destroy()
+		self.index_label_freq = 0
+		for ap in self.AP:
+			if ap in self.AP_enabled:
+				self.AP_enabled.remove(ap) 
+			self.ap_cbs[ap].var.set(False)
+		self.resize_image()
+		self.show_frame(self.resized_image)
 
 	def draw_circle(self, name_ap):
 	    # cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", self.cmaps.items()[0][1][self.color_dict[name_ap]])
@@ -232,10 +301,10 @@ class GUI_Manager:
 		#center_x = self.w/2
 		#center_y = self.h/2
 		# self.image_to_color = self.map_image.copy()
-		map_center = self.image_to_color[int(self.center_x-MAP_SIZE):int(self.center_x+MAP_SIZE), 
-		int(self.center_y-MAP_SIZE):int(self.center_y+MAP_SIZE), :]
-		r = 700.0 / map_center.shape[1]
-		dim = (700, int(map_center.shape[0] * r))
+		map_center = self.image_to_color[int(self.center_x-MAP_SIZE/2.5):int(self.center_x+MAP_SIZE/2.5), 
+		int(self.center_y-MAP_SIZE/4):int(self.center_y+MAP_SIZE), :]
+		r = 850.0 / map_center.shape[1]
+		dim = (850, int(map_center.shape[0] * r))
 		self.resized_image = cv2.resize(map_center, dim, interpolation = cv2.INTER_AREA)
 		# self.resized_image = cv2.resize(map_center, (map_center.shape[0]*CONST_RESIZE,map_center.shape[1]*CONST_RESIZE),
 		#  interpolation = cv2.INTER_AREA)
@@ -295,7 +364,20 @@ if __name__ == "__main__":
 	gui_manager.resize_image()
 
 	gui_manager.update()
+	# root = tk.Tk()
+	# root.geometry("600x300+900+200")
 
+	# main_frame = tk.Frame(root, bg=BACKGROUND_COLOR_MENU)
+	# body_frame = tk.Frame(main_frame)
+
+	# for i in range(3):
+	# 	md_label = MDLabel(body_frame, sc="grey", si=1, text="Label " + str(i))
+	# 	md_label.pack(expand=1, fill="both", pady=5)
+
+	# body_frame.pack(expand=1, fill="both", pady=5, padx=5)
+	# main_frame.pack(expand=True, fill="both")
+
+	# root.mainloop()
 
 	
 	
