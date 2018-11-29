@@ -41,7 +41,7 @@ class DB_Manager:
 		cursor.execute("SELECT access_point_name, access_point_address FROM APs")
 		APs = {}
 		for it in cursor.fetchall():
-			APs[it[0]] = it[1]
+			APs[it[1]] = it[0]
 
 		# for key in APs:
 		# 	print(key, APs[key])

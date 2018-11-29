@@ -15,16 +15,16 @@ class Mapping:
         # self.APs = []
 
     def getAPs(self):
+        for i in self.DB_Man.select_APs():
+            print(i, self.DB_Man.select_APs()[i])
         return self.DB_Man.select_APs()
-        # for i in self.APs:
-        #     print(i)
 
     def createMappingAP(self, mac_address):
         maps = {}
         maps_AP = {}
         positions = self.DB_Man.select_Waypoints_AP(mac_address)
         for pos in positions:
-            #print(pos)
+            # print(pos)
             if pos[8] not in maps_AP:
                 maps_AP[pos[8]] = [pos[9]]
             else:

@@ -97,12 +97,13 @@ class GUI_Manager:
 		self.display2.config(background=BACKGROUND_COLOR_MENU, borderwidth = 1, highlightthickness = 1, width=300, height=510)
 		self.display2.grid(row=0, column=1, sticky="N", padx=50, pady=20) #Display 2
 		self.display2.grid_propagate(False)
+		# self.display2.create_arc(710, 300, 840, 300,style='arc', width=300)
 
 		self.tuple_mapping = dict()
 		self.cmaps = OrderedDict()
 
 		self.cmaps['Sequential'] = [
-			'Oranges', 'Purples', 'Blues', 'Greens', 'Oranges', 'Greys',
+			'Oranges', 'Purples', 'Blues', 'Greens','Greys',
 			'YlOrBr', 'YlOrRd', 'OrRd', 'PuRd', 'RdPu', 'BuPu',
 			'GnBu', 'PuBu', 'YlGnBu', 'PuBuGn', 'BuGn', 'YlGn']
 		# self.cmaps.items()[0][1]['Oranges'] = self.reverse_colourmap(self.cmaps.items()[0][1]['Oranges'])
@@ -115,20 +116,22 @@ class GUI_Manager:
 		label_list_wifi.configure(background=BACKGROUND_COLOR_MENU,font=('Arial', 11, 'bold'))
 		col = 0
 		self.ap_cbs = dict()
-		for name in self.AP:
+		for address in self.AP:
 			i = i+1
-			self.ap_cbs[name] = tk.Checkbutton(self.display2, text=name, onvalue=True, offvalue=False,font=("Arial",11))
-			self.ap_cbs[name].config(background=BACKGROUND_COLOR_MENU, borderwidth = 0, highlightthickness = 0)
-			self.ap_cbs[name].var = tk.BooleanVar()
-			self.ap_cbs[name]['variable'] = self.ap_cbs[name].var
-			self.ap_cbs[name]['command'] = lambda w=self.ap_cbs[name]: self.upon_select(w)
-			self.ap_cbs[name].grid(row=i, sticky=W)
+			name = self.AP[address]
+			widget = tk.Checkbutton(self.display2, text=name, onvalue=True, offvalue=False,font=("Arial",11))
+			widget.config(background=BACKGROUND_COLOR_MENU, borderwidth = 0, highlightthickness = 0)
+			widget.var = tk.BooleanVar()
+			widget['variable'] = widget.var
+			widget['command'] = lambda w=widget: self.upon_select(w)
+			widget.grid(row=i, sticky=W)
+			self.ap_cbs[widget] = address
 
-			self.color_dict[name] = col
-			cmap = plt.get_cmap(self.list_color[self.color_dict[name]])
+			self.color_dict[address] = col
+			cmap = plt.get_cmap(self.list_color[self.color_dict[address]])
 			color = cmap(self.norm(MAX_VALUE_FREQUENCY))[:3]
 			print(color,color[2]*255,color[1]*255,color[0]*255)
-			self.ap_cbs[name].config(fg=matplotlib.colors.to_hex([color[0],color[1],color[2]]))
+			widget.config(fg=matplotlib.colors.to_hex([color[0],color[1],color[2]]))
 			
 			col = col+1
 			if col >= len(self.list_color):
@@ -183,7 +186,7 @@ class GUI_Manager:
 		self.index_label_freq = 0
 		self.label = dict()
 
-	def select_power_streght(self,widget):
+	def select_power_streght(self, widget):
 		self.useStandardFreq = widget.var.get()
 		if self.useStandardFreq == True:
 			for wid in self.display4.winfo_children():
@@ -193,56 +196,60 @@ class GUI_Manager:
 		self.image_to_color = self.map_image.copy()
 		for i in self.AP_enabled:
 			if self.useStandardFreq == False:
-				self.create_label_power(i, self.AP[i])
+				self.create_label_power(self.AP[i], i)
 			self.draw_circle(i)
 			#print(i)
 		self.resize_image()
 		self.show_frame(self.resized_image)
 
 	def upon_select(self, widget):
-	    print("{}'s value is {}.".format(widget['text'], widget.var.get()))
-	    address = self.AP[widget['text']]
+	    print("{}'s value is {}.".format(self.ap_cbs[widget], widget.var.get()))
+	    address = self.ap_cbs[widget]
+	    # for ap in self.AP:
+		# 	if self.AP[ap] == widget['text']:
+		# 	    address = ap
+		# 	    pass
 	    if widget.var.get() == True:
-			self.AP_enabled.append(widget['text'])
-			self.draw_circle(widget['text'])
+			self.AP_enabled.append(address)
+			self.draw_circle(address)
 			self.create_label_power(widget['text'], address)
 	    else:
 			self.clear_label_image()
-			self.AP_enabled.remove(widget['text'])
+			self.AP_enabled.remove(address)
 			self.image_to_color = self.map_image.copy()
 			# self.display4.grid_forget()
 			for wid in self.display4.winfo_children():
 				wid.destroy()
 			self.index_label_freq = 0
 			for i in self.AP_enabled:
-				self.create_label_power(i, self.AP[i])
+				self.create_label_power(self.AP[i], i)
 				self.draw_circle(i)
 				#print(i)
 			self.resize_image()
 			self.show_frame(self.resized_image)
 
 	def create_label_power(self, name_ap, address):
-		# print("LABEL",name_ap,address)
+		print("LABEL",name_ap,address)
 		# print("INDEX ",self.index_label_freq)
 		if self.useStandardFreq:
 			return
 		else:
-			label_str = name_ap +': ['+self.tuple_mapping[name_ap][1][address][1]+','+self.tuple_mapping[name_ap][1][address][0]+']'
-			self.label[name_ap] = Label(self.display4, text=label_str)
-			self.label[name_ap].grid(row=self.index_label_freq)
+			label_str = name_ap +': ['+self.tuple_mapping[address][1][address][1]+','+self.tuple_mapping[address][1][address][0]+']'
+			self.label[address] = Label(self.display4, text=label_str)
+			self.label[address].grid(row=self.index_label_freq)
 			self.index_label_freq = self.index_label_freq+1
-			cmap = plt.get_cmap(self.list_color[self.color_dict[name_ap]])
+			cmap = plt.get_cmap(self.list_color[self.color_dict[address]])
 			color = cmap(self.norm(MAX_VALUE_FREQUENCY))[:3]
-			self.label[name_ap].config(fg=matplotlib.colors.to_hex([color[0],color[1],color[2]]))
-			self.label[name_ap].configure(background=BACKGROUND_COLOR_MENU, pady=2)
+			self.label[address].config(fg=matplotlib.colors.to_hex([color[0],color[1],color[2]]))
+			self.label[address].configure(background=BACKGROUND_COLOR_MENU, pady=2)
 			self.window.grid_propagate(0)
 
 	def select_all(self):
 		for ap in self.AP:
 			self.draw_circle(ap)
-			self.ap_cbs[ap].var.set(True)
+			self.ap_cbs.keys()[self.ap_cbs.values().index(ap)].var.set(True)
 			self.AP_enabled.append(ap)
-			self.create_label_power(ap, self.AP[ap])
+			self.create_label_power(self.AP[ap], ap)
 
 	def deselect_all(self):
 		self.clear_label_image()
@@ -253,7 +260,7 @@ class GUI_Manager:
 		for ap in self.AP:
 			if ap in self.AP_enabled:
 				self.AP_enabled.remove(ap) 
-			self.ap_cbs[ap].var.set(False)
+			self.ap_cbs.keys()[self.ap_cbs.values().index(ap)].var.set(False)
 		self.resize_image()
 		self.show_frame(self.resized_image)
 
@@ -265,12 +272,12 @@ class GUI_Manager:
 	    if name_ap in self.mapping_AP:
 			map_tmp = self.mapping_AP[name_ap]
 	    else:
-			self.tuple_mapping[name_ap] = self.map_manager.createMappingAP(self.AP[name_ap])
+			self.tuple_mapping[name_ap] = self.map_manager.createMappingAP(name_ap)
 			map_tmp = self.tuple_mapping[name_ap][0].items()
 			self.mapping_AP[name_ap] = map_tmp
 	    if not self.useStandardFreq:
-			MIN_VALUE_FREQUENCY = int(self.tuple_mapping[name_ap][1][self.AP[name_ap]][1])
-			MAX_VALUE_FREQUENCY = int(self.tuple_mapping[name_ap][1][self.AP[name_ap]][0])
+			MIN_VALUE_FREQUENCY = int(self.tuple_mapping[name_ap][1][name_ap][1])
+			MAX_VALUE_FREQUENCY = int(self.tuple_mapping[name_ap][1][name_ap][0])
 	    else:
 			MIN_VALUE_FREQUENCY = -100
 			MAX_VALUE_FREQUENCY = 0
