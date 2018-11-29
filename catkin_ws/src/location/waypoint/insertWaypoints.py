@@ -4,8 +4,8 @@ import rospy
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from geometry_msgs.msg import PoseStamped
 
-import imp
-db_man = imp.load_source('DB_Manager', '/home/wallf/git/Tesi/catkin_ws/src/cinnamon/src/db.py')
+import imp, os
+db_man = imp.load_source('DB_Manager', os.path.dirname(os.path.abspath(__file__))+'/../../cinnamon/src/db.py')
 
 from collections import OrderedDict
 

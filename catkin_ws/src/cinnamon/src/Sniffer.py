@@ -8,9 +8,10 @@ from nav_msgs.msg import Odometry
 
 from collections import OrderedDict
 #user = 'eliana'
-import imp
-db_man = imp.load_source('DB_Manager', '../cinnamon/src/db.py')
-enum_man = imp.load_source('Enum_Type', '../cinnamon/src/Enum_Type.py')
+import imp, os
+dir_file = os.path.dirname(os.path.abspath(__file__))
+db_man = imp.load_source('DB_Manager', dir_file+'/db.py')
+enum_man = imp.load_source('Enum_Type', dir_file+'/Enum_Type.py')
 #from db import DB_Manager
 #from Enum_Type import Enum_Type
 
@@ -222,3 +223,6 @@ class Sniffer:
 # ('Data', ' ', 'Beacon')
 # ('fc:19:10:45:ef:01', ' ', 'd8:84:66:43:2a:48', ' ', 'd8:84:66:43:2a:48')
 # (False, ' ', True)
+
+if __name__ == "__main__":
+	Sniffer()

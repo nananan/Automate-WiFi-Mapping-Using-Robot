@@ -3,8 +3,8 @@
 import rospy
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 
-import imp
-db_man = imp.load_source('DB_Manager', '../cinnamon/db.py')
+import imp, os
+db_man = imp.load_source('DB_Manager', os.path.dirname(os.path.abspath(__file__))+'/../cinnamon/src/db.py')
 
 import actionlib
 from actionlib_msgs.msg import *
