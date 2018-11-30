@@ -22,12 +22,13 @@ from collections import OrderedDict
 # from mercator import *
 import re,os
 import imp
-mapping_man = imp.load_source('Mapping',os.path.dirname(os.path.abspath(__file__))+'/waypoint/mapping.py')
+file = os.path.dirname(os.path.abspath(__file__))
+mapping_man = imp.load_source('Mapping',file+'/waypoint/mapping.py')
 
 
-OFFICE_SVG_PATH = '../navigation/mybot_navigation/map_cubo/corridoio_all_good.pgm'
-FILE_OFFICE_PATH = '../navigation/mybot_navigation/map_cubo/corridoio_all_good.yaml'
-IMAGE_ICON = 'img/wifi_icon.png'
+OFFICE_SVG_PATH = file+'/../navigation/mybot_navigation/map_cubo/corridoio_all_good.pgm'
+FILE_OFFICE_PATH = file+'/../navigation/mybot_navigation/map_cubo/corridoio_all_good.yaml'
+IMAGE_ICON = file+'/img/wifi_icon.png'
 # PIXEL = 37.7952755906
 BACKGROUND_COLOR = "#a2b6ca" #"#6799c7"
 BACKGROUND_COLOR_MENU = "#d2dbe5"
@@ -171,9 +172,9 @@ class GUI_Manager:
 		self.display4.config(background=BACKGROUND_COLOR_MENU)
 		self.display4.grid(row=i, column=0,sticky="NW") #Display 4
 		self.display4.grid_propagate(0)
-		label_freq_range = Label(self.display4, text="Power Ranges:")
-		label_freq_range.grid(row=0, sticky="NW", padx=3, pady=3)
-		label_freq_range.configure(background=BACKGROUND_COLOR_MENU,font=('Arial', 10, 'bold'))
+		# label_freq_range = Label(self.display4, text="Power Ranges:")
+		# label_freq_range.grid(row=0, sticky="NW", padx=3, pady=3)
+		# label_freq_range.configure(background=BACKGROUND_COLOR_MENU,font=('Arial', 10, 'bold'))
 
 		h = "cdcdcd".lstrip('#')
 		col_back = tuple(int(h[i:i+2], 16) for i in (0, 2 ,4))
@@ -185,7 +186,7 @@ class GUI_Manager:
 		self.map_image = cv2.imread(OFFICE_SVG_PATH)
 		self.map_image[np.where((self.map_image == [col_back[2],col_back[1],col_back[0]])
 			.all(axis = 2))] = col_back_new[2],col_back_new[1],col_back_new[0]
-		# cv2.imwrite('output.png', self.map_image)
+		
 		self.image_to_color = self.map_image
 		self.useStandardFreq = False
 		self.index_label_freq = 1
@@ -223,8 +224,8 @@ class GUI_Manager:
 	    if widget.var.get() == True:
 			self.AP_enabled.append(address)
 			self.draw_circle(address)
-			self.create_label_power(widget['text'], address)
 			self.destroy_child = True
+			self.create_label_power(widget['text'], address)
 	    else:
 			self.clear_label_image()
 			self.AP_enabled.remove(address)
