@@ -103,9 +103,10 @@ class GUI_Manager:
 		self.cmaps = OrderedDict()
 
 		self.cmaps['Sequential'] = [
-			'Oranges', 'Purples', 'Blues', 'Greens','Greys',
+			'Greys', 'Purples', 'Blues', 'Greens', 'Oranges', 'Reds',
 			'YlOrBr', 'YlOrRd', 'OrRd', 'PuRd', 'RdPu', 'BuPu',
 			'GnBu', 'PuBu', 'YlGnBu', 'PuBuGn', 'BuGn', 'YlGn']
+			#Accent, Accent_r, Blues, Blues_r, BrBG, BrBG_r, BuGn, BuGn_r, BuPu, BuPu_r, CMRmap, CMRmap_r, Dark2, Dark2_r, GnBu, GnBu_r, Greens, Greens_r, Greys, Greys_r, OrRd, OrRd_r, Oranges, Oranges_r, PRGn, PRGn_r, Paired, Paired_r, Pastel1, Pastel1_r, Pastel2, Pastel2_r, PiYG, PiYG_r, PuBu, PuBuGn, PuBuGn_r, PuBu_r, PuOr, PuOr_r, PuRd, PuRd_r, Purples, Purples_r, RdBu, RdBu_r, RdGy, RdGy_r, RdPu, RdPu_r, RdYlBu, RdYlBu_r, RdYlGn, RdYlGn_r, Reds, Reds_r, Set1, Set1_r, Set2, Set2_r, Set3, Set3_r, Spectral, Spectral_r, Vega10, Vega10_r, Vega20, Vega20_r, Vega20b, Vega20b_r, Vega20c, Vega20c_r, Wistia, Wistia_r, YlGn, YlGnBu, YlGnBu_r, YlGn_r, YlOrBr, YlOrBr_r, YlOrRd, YlOrRd_r, afmhot, afmhot_r, autumn, autumn_r, binary, binary_r, bone, bone_r, brg, brg_r, bwr, bwr_r, cool, cool_r, coolwarm, coolwarm_r, copper, copper_r, cubehelix, cubehelix_r, flag, flag_r, gist_earth, gist_earth_r, gist_gray, gist_gray_r, gist_heat, gist_heat_r, gist_ncar, gist_ncar_r, gist_rainbow, gist_rainbow_r, gist_stern, gist_stern_r, gist_yarg, gist_yarg_r, gnuplot, gnuplot2, gnuplot2_r, gnuplot_r, gray, gray_r, hot, hot_r, hsv, hsv_r, inferno, inferno_r, jet, jet_r, magma, magma_r, nipy_spectral, nipy_spectral_r, ocean, ocean_r, pink, pink_r, plasma, plasma_r, prism, prism_r, rainbow, rainbow_r, seismic, seismic_r, spectral, spectral_r, spring, spring_r, summer, summer_r, terrain, terrain_r, viridis, viridis_r, winter, winter_r
 		# self.cmaps.items()[0][1]['Oranges'] = self.reverse_colourmap(self.cmaps.items()[0][1]['Oranges'])
 		self.list_color = self.cmaps.items()[0][1]
 		self.norm = matplotlib.colors.Normalize(vmin=MIN_VALUE_FREQUENCY, vmax=MAX_VALUE_FREQUENCY)
@@ -166,9 +167,13 @@ class GUI_Manager:
 		butt_freq.grid(row=i, sticky="W", padx=10)
 		i = i+1
 
-		self.display4 = tk.Frame(self.display2, width = 250, height = 50)
+		self.display4 = tk.Frame(self.display2, width = 250, height = 150)
 		self.display4.config(background=BACKGROUND_COLOR_MENU)
-		self.display4.grid(row=i, column=0,sticky="N") #Display 4
+		self.display4.grid(row=i, column=0,sticky="NW") #Display 4
+		self.display4.grid_propagate(0)
+		label_freq_range = Label(self.display4, text="Power Ranges:")
+		label_freq_range.grid(row=0, sticky="NW", padx=3, pady=3)
+		label_freq_range.configure(background=BACKGROUND_COLOR_MENU,font=('Arial', 10, 'bold'))
 
 		h = "cdcdcd".lstrip('#')
 		col_back = tuple(int(h[i:i+2], 16) for i in (0, 2 ,4))
@@ -183,14 +188,20 @@ class GUI_Manager:
 		# cv2.imwrite('output.png', self.map_image)
 		self.image_to_color = self.map_image
 		self.useStandardFreq = False
-		self.index_label_freq = 0
+		self.index_label_freq = 1
 		self.label = dict()
+		self.destroy_child = False
 
 	def select_power_streght(self, widget):
 		self.useStandardFreq = widget.var.get()
 		if self.useStandardFreq == True:
 			for wid in self.display4.winfo_children():
 				wid.destroy()
+				self.destroy_child = True
+		else:
+			label_freq_range = Label(self.display4, text="Power Ranges:")
+			label_freq_range.grid(row=0, sticky="NW", padx=3, pady=3)
+			label_freq_range.configure(background=BACKGROUND_COLOR_MENU,font=('Arial', 10, 'bold'))
 		# print("BUTTONN {}'s value is {}.".format(widget['text'], widget.var.get()))
 		self.clear_label_image()
 		self.image_to_color = self.map_image.copy()
@@ -213,6 +224,7 @@ class GUI_Manager:
 			self.AP_enabled.append(address)
 			self.draw_circle(address)
 			self.create_label_power(widget['text'], address)
+			self.destroy_child = True
 	    else:
 			self.clear_label_image()
 			self.AP_enabled.remove(address)
@@ -220,7 +232,8 @@ class GUI_Manager:
 			# self.display4.grid_forget()
 			for wid in self.display4.winfo_children():
 				wid.destroy()
-			self.index_label_freq = 0
+				self.destroy_child = True
+			self.index_label_freq = 1
 			for i in self.AP_enabled:
 				self.create_label_power(self.AP[i], i)
 				self.draw_circle(i)
@@ -229,14 +242,19 @@ class GUI_Manager:
 			self.show_frame(self.resized_image)
 
 	def create_label_power(self, name_ap, address):
-		print("LABEL",name_ap,address)
+		# print("LABEL",name_ap,address)
 		# print("INDEX ",self.index_label_freq)
 		if self.useStandardFreq:
 			return
 		else:
+			if self.destroy_child:
+				label_freq_range = Label(self.display4, text="Power Ranges:")
+				label_freq_range.grid(row=0, sticky="NW", padx=3, pady=3)
+				label_freq_range.configure(background=BACKGROUND_COLOR_MENU,font=('Arial', 10, 'bold'))
+				self.destroy_child = False
 			label_str = name_ap +': ['+self.tuple_mapping[address][1][address][1]+','+self.tuple_mapping[address][1][address][0]+']'
 			self.label[address] = Label(self.display4, text=label_str)
-			self.label[address].grid(row=self.index_label_freq)
+			self.label[address].grid(row=self.index_label_freq,sticky="W", padx=5)
 			self.index_label_freq = self.index_label_freq+1
 			cmap = plt.get_cmap(self.list_color[self.color_dict[address]])
 			color = cmap(self.norm(MAX_VALUE_FREQUENCY))[:3]
@@ -249,6 +267,7 @@ class GUI_Manager:
 			self.draw_circle(ap)
 			self.ap_cbs.keys()[self.ap_cbs.values().index(ap)].var.set(True)
 			self.AP_enabled.append(ap)
+			self.destroy_child = True
 			self.create_label_power(self.AP[ap], ap)
 
 	def deselect_all(self):
@@ -256,7 +275,7 @@ class GUI_Manager:
 		self.image_to_color = self.map_image.copy()
 		for wid in self.display4.winfo_children():
 			wid.destroy()
-		self.index_label_freq = 0
+		self.index_label_freq = 1
 		for ap in self.AP:
 			if ap in self.AP_enabled:
 				self.AP_enabled.remove(ap) 
