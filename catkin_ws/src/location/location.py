@@ -70,12 +70,13 @@ class GUI_Manager:
 		self.display1 = tk.Label(self.imageFrame, borderwidth = 0, highlightthickness = 0)#, width=800, height=500)
 		self.display1.pack(side=LEFT)#grid(row=0, column=0) #, padx=10, pady=2)  #Display 1
 
+		#SHADOW
 		# self.display2_sh = tk.Frame(self.window)
 		# self.display2_sh.config(background="#82868a", borderwidth = 0, highlightthickness = 0, width=301, height=512)
 		# self.display2_sh.grid(row=0, column=1, sticky="N", padx=50, pady=20) #Display 2
 		# self.display2_sh.grid_propagate(False)
 
-		self.display2 = tk.Frame(self.window)
+		self.display2 = tk.Canvas(self.window)
 		self.display2.config(background=BACKGROUND_COLOR_MENU, borderwidth = 1, highlightthickness = 1, width=300, height=510)
 		self.display2.pack(side=RIGHT)#grid(row=0, column=1, sticky="N", padx=50, pady=20) #Display 2
 		self.display2.grid_propagate(0)
@@ -93,44 +94,58 @@ class GUI_Manager:
 		self.list_color = self.cmaps.items()[0][1]
 		self.norm = matplotlib.colors.Normalize(vmin=MIN_VALUE_FREQUENCY, vmax=MAX_VALUE_FREQUENCY)
 		self.color_dict = {}
-		i = 0
+
 		label_list_wifi = Label(self.display2, text="List Wireless Source:")
-		label_list_wifi.grid(row=0, sticky="W", pady=3)
-		label_list_wifi.configure(background=BACKGROUND_COLOR_MENU,font=('Arial', 11, 'bold'))
+		label_list_wifi.grid(row=0, sticky="W", padx=3, pady=3)
+		label_list_wifi.configure(background=BACKGROUND_COLOR_MENU, font=('Arial', 11, 'bold'))
+		frame_ap=Frame(self.display2,width=100,height=500)
+		frame_ap.grid(row=1,column=0)
+
+		scrollbar_ap = Scrollbar(frame_ap)
+		scrollbar_ap.pack(side=RIGHT, fill=Y)
+
+		self.display_ap=Canvas(frame_ap,bg=BACKGROUND_COLOR_MENU)
+		self.display_ap.configure(width=250,height=180)
+		self.display_ap.configure(scrollregion=(0,0,250,len(self.AP)*20), yscrollcommand=scrollbar_ap.set)
+		self.display_ap.pack(fill='both', expand=True, side='left')
+
+		scrollbar_ap.config(command=self.display_ap.yview)
+		i = 0
 		col = 0
 		self.ap_cbs = dict()
 		for address in self.AP:
-			i = i+1
 			name = self.AP[address]
-			widget = tk.Checkbutton(self.display2, text=name, onvalue=True, offvalue=False,font=("Arial",11))
+			widget = tk.Checkbutton(self.display_ap, text=name, onvalue=True, offvalue=False,font=("Arial",11))
 			widget.config(background=BACKGROUND_COLOR_MENU, borderwidth = 0, highlightthickness = 0)
+
 			widget.var = tk.BooleanVar()
 			widget['variable'] = widget.var
 			widget['command'] = lambda w=widget: self.upon_select(w)
 			widget.grid(row=i, sticky=W)
 			self.ap_cbs[widget] = address
+			self.display_ap.create_window(0, i*20, anchor='nw', window=widget, height=20)
 
 			self.color_dict[address] = col
 			cmap = plt.get_cmap(self.list_color[self.color_dict[address]])
 			color = cmap(self.norm(MAX_VALUE_FREQUENCY))[:3]
 			print(color,color[2]*255,color[1]*255,color[0]*255)
 			widget.config(fg=matplotlib.colors.to_hex([color[0],color[1],color[2]]))
-
+			i = i+1
 			col = col+1
 			if col >= len(self.list_color):
 				col = 0
 
 		i = i+1
-		self.display_button = tk.Frame(self.display2, width=250, height=50)
-		self.display_button.config(background=BACKGROUND_COLOR_MENU)
-		self.display_button.grid(row=i, column=0, sticky="E") #Display 3
+		self.display_button = tk.Frame(self.display2)
+		self.display_button.configure(background=BACKGROUND_COLOR_MENU, width=250, height=50)
+		self.display_button.grid(row=i, column=0, sticky="E", pady=10) #Display 3
 		self.display_button.grid_propagate(0)
-		sel_all = Button(self.display_button, command=self.select_all, text="Select All",font=('Arial', 10, 'bold'))
-		sel_all.grid(row=0, column = 0)
-		sel_all.config(relief=FLAT, background=BACKGROUND_COLOR_MENU, borderwidth = 0, highlightthickness = 0)
 		desel_all = Button(self.display_button, command=self.deselect_all, text="Deselect All",font=('Arial', 10, 'bold'))
-		desel_all.grid(row=0, column = 1)
+		desel_all.pack(side=RIGHT)#grid(row=0, column = 1, sticky=E)
 		desel_all.config(relief=FLAT, background=BACKGROUND_COLOR_MENU, borderwidth = 0, highlightthickness = 0)
+		sel_all = Button(self.display_button, command=self.select_all, text="Select All",font=('Arial', 10, 'bold'))
+		sel_all.pack(side=RIGHT)#grid(row=0, column = 0, sticky=E)
+		sel_all.config(relief=FLAT, background=BACKGROUND_COLOR_MENU, borderwidth = 0, highlightthickness = 0)
 		i = i+1
 
 		self.display3 = tk.Frame(self.display2, width=250, height=50)
@@ -138,7 +153,7 @@ class GUI_Manager:
 		self.display3.grid(row=i, column=0, sticky="N", pady=3) #Display 3
 		self.display3.grid_propagate(0)
 		label_freq = Label(self.display3, text="Power:")
-		label_freq.grid(row=0, sticky="W", padx=3, pady=3)
+		label_freq.grid(row=0, sticky="W", pady=3)
 		label_freq.configure(background=BACKGROUND_COLOR_MENU,font=('Arial', 11, 'bold'))
 		i = i+1
 		butt_freq = tk.Checkbutton(self.display3, text="Use Power range [-100,0]", onvalue=True, offvalue=False,font=("Arial",11))
@@ -149,7 +164,7 @@ class GUI_Manager:
 		butt_freq.grid(row=i, sticky="W", padx=10)
 		i = i+1
 		label_freq_range = Label(self.display2, text="Power Ranges:")
-		label_freq_range.grid(row=i, sticky="W", padx=3, pady=3) #grid(row=0, padx=3, pady=3)#
+		label_freq_range.grid(row=i, sticky="W", padx=7, pady=3) #grid(row=0, padx=3, pady=3)#
 		label_freq_range.configure(background=BACKGROUND_COLOR_MENU,font=('Arial', 10, 'bold'))
 		i=i+1
 		frame=Frame(self.display2,width=100,height=500)
@@ -263,7 +278,7 @@ class GUI_Manager:
 			cmap = plt.get_cmap(self.list_color[self.color_dict[address]])
 			color = cmap(self.norm(MAX_VALUE_FREQUENCY))[:3]
 			self.label[address].config(fg=matplotlib.colors.to_hex([color[0],color[1],color[2]]))
-			self.label[address].configure(background=BACKGROUND_COLOR_MENU, pady=2, padx=5)
+			self.label[address].configure(background=BACKGROUND_COLOR_MENU, pady=2, padx=10)
 
 			self.display4.create_window(0, self.index_label_freq*20, anchor='nw', window=self.label[address], height=20)
 			self.index_label_freq = self.index_label_freq+1
