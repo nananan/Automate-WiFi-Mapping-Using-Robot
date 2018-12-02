@@ -20,14 +20,14 @@ from matplotlib import cm
 # from colorspacious import cspace_converter
 from collections import OrderedDict
 # from mercator import *
-import re,os
+import re,os,argparse
 import imp
 file = os.path.dirname(os.path.abspath(__file__))
 mapping_man = imp.load_source('Mapping',file+'/waypoint/mapping.py')
 
 
-OFFICE_SVG_PATH = file+'/../navigation/mybot_navigation/map_cubo/corridoio_all_good.pgm'
-FILE_OFFICE_PATH = file+'/../navigation/mybot_navigation/map_cubo/corridoio_all_good.yaml'
+MAP_IMAGE_PATH = file+'/../navigation/mybot_navigation/map_cubo/corridoio_all_good.pgm'
+MAP_YAML_PATH = file+'/../navigation/mybot_navigation/map_cubo/corridoio_all_good.yaml'
 IMAGE_ICON = file+'/img/wifi_icon.png'
 # PIXEL = 37.7952755906
 BACKGROUND_COLOR = "#a2b6ca" #"#6799c7"
@@ -38,32 +38,13 @@ MAP_SIZE = 400
 MIN_VALUE_FREQUENCY = -80
 MAX_VALUE_FREQUENCY = -50
 
-class MDLabel(tk.Frame):
-
-    def __init__(self, parent=None, **options):
-        tk.Frame.__init__(self, parent, bg=options["sc"])  # sc = shadow color
-        self.label = tk.Label(self, text=options["text"], padx=15, pady=10)
-        self.label.pack(expand=1, fill="both", padx=(0, options["si"]), pady=(0, options["si"]))  # shadow intensit
-
 class GUI_Manager:
-	# def reverse_colourmap(self,cmap, name = 'my_cmap_r'):
-	# 	reverse = []
-	# 	k = []   
-
-	# 	for key in cmap._segmentdata:    
-	# 		k.append(key)
-	# 		channel = cmap._segmentdata[key]
-	# 		data = []
-
-	# 		for t in channel:                    
-	# 			data.append((1-t[0],t[2],t[1]))            
-	# 		reverse.append(sorted(data))    
-
-	# 	LinearL = dict(zip(k,reverse))
-	# 	my_cmap_r = mpl.colors.LinearSegmentedColormap(name, LinearL) 
-	# 	return my_cmap_r
-
 	def __init__(self):
+		if not self.get_params():
+			os._exit(0)
+		self.map_image_path = self.args.map_image if self.args.map_image else MAP_IMAGE_PATH
+		self.map_yaml_path = self.args.map_yaml if self.args.map_yaml else MAP_YAML_PATH
+		# print(self.map_image_path, self.map_yaml_path)
 		#Get resolution value
 		self.resolution_value = self.get_resolution()
 		print(self.resolution_value)
@@ -82,22 +63,22 @@ class GUI_Manager:
 		imgicon = PhotoImage(file=IMAGE_ICON)
 		self.window.tk.call('wm','iconphoto', self.window._w, imgicon)
 		self.window.config(background=BACKGROUND_COLOR)
-		
+
 		#Graphics window
 		self.imageFrame = tk.Frame(self.window, width=900, height=500)
-		self.imageFrame.grid(row=0, column=0, padx=10, pady=10)
+		self.imageFrame.pack(side=LEFT, padx=10, pady=10)#grid(row=0, column=0, padx=10, pady=10)
 		self.display1 = tk.Label(self.imageFrame, borderwidth = 0, highlightthickness = 0)#, width=800, height=500)
-		self.display1.grid(row=0, column=0) #, padx=10, pady=2)  #Display 1
+		self.display1.pack(side=LEFT)#grid(row=0, column=0) #, padx=10, pady=2)  #Display 1
 
-		self.display2_sh = tk.Frame(self.window)
-		self.display2_sh.config(background="#82868a", borderwidth = 0, highlightthickness = 0, width=301, height=512)
-		self.display2_sh.grid(row=0, column=1, sticky="N", padx=50, pady=20) #Display 2
-		self.display2_sh.grid_propagate(False)
+		# self.display2_sh = tk.Frame(self.window)
+		# self.display2_sh.config(background="#82868a", borderwidth = 0, highlightthickness = 0, width=301, height=512)
+		# self.display2_sh.grid(row=0, column=1, sticky="N", padx=50, pady=20) #Display 2
+		# self.display2_sh.grid_propagate(False)
 
 		self.display2 = tk.Frame(self.window)
 		self.display2.config(background=BACKGROUND_COLOR_MENU, borderwidth = 1, highlightthickness = 1, width=300, height=510)
-		self.display2.grid(row=0, column=1, sticky="N", padx=50, pady=20) #Display 2
-		self.display2.grid_propagate(False)
+		self.display2.pack(side=RIGHT)#grid(row=0, column=1, sticky="N", padx=50, pady=20) #Display 2
+		self.display2.grid_propagate(0)
 		# self.display2.create_arc(710, 300, 840, 300,style='arc', width=300)
 
 		self.tuple_mapping = dict()
@@ -134,7 +115,7 @@ class GUI_Manager:
 			color = cmap(self.norm(MAX_VALUE_FREQUENCY))[:3]
 			print(color,color[2]*255,color[1]*255,color[0]*255)
 			widget.config(fg=matplotlib.colors.to_hex([color[0],color[1],color[2]]))
-			
+
 			col = col+1
 			if col >= len(self.list_color):
 				col = 0
@@ -151,7 +132,7 @@ class GUI_Manager:
 		desel_all.grid(row=0, column = 1)
 		desel_all.config(relief=FLAT, background=BACKGROUND_COLOR_MENU, borderwidth = 0, highlightthickness = 0)
 		i = i+1
-		
+
 		self.display3 = tk.Frame(self.display2, width=250, height=50)
 		self.display3.config(background=BACKGROUND_COLOR_MENU)
 		self.display3.grid(row=i, column=0, sticky="N", pady=3) #Display 3
@@ -167,31 +148,54 @@ class GUI_Manager:
 		butt_freq['command'] = lambda w=butt_freq: self.select_power_streght(w)
 		butt_freq.grid(row=i, sticky="W", padx=10)
 		i = i+1
+		label_freq_range = Label(self.display2, text="Power Ranges:")
+		label_freq_range.grid(row=i, sticky="W", padx=3, pady=3) #grid(row=0, padx=3, pady=3)#
+		label_freq_range.configure(background=BACKGROUND_COLOR_MENU,font=('Arial', 10, 'bold'))
+		i=i+1
+		frame=Frame(self.display2,width=100,height=500)
+		frame.grid(row=i,column=0)
 
-		self.display4 = tk.Frame(self.display2, width = 250, height = 150)
-		self.display4.config(background=BACKGROUND_COLOR_MENU)
-		self.display4.grid(row=i, column=0,sticky="NW") #Display 4
-		self.display4.grid_propagate(0)
-		# label_freq_range = Label(self.display4, text="Power Ranges:")
-		# label_freq_range.grid(row=0, sticky="NW", padx=3, pady=3)
-		# label_freq_range.configure(background=BACKGROUND_COLOR_MENU,font=('Arial', 10, 'bold'))
+		scrollbar = Scrollbar(frame)
+		scrollbar.pack(side=RIGHT, fill=Y)
+
+		self.display4=Canvas(frame,bg=BACKGROUND_COLOR_MENU)
+		self.display4.configure(width=250,height=130)
+		self.display4.configure(scrollregion=(0,0,250,len(self.AP)*20), yscrollcommand=scrollbar.set)
+		self.display4.pack(fill='both', expand=True, side='left')
+
+		scrollbar.config(command=self.display4.yview)
 
 		h = "cdcdcd".lstrip('#')
 		col_back = tuple(int(h[i:i+2], 16) for i in (0, 2 ,4))
-		
+
 		h = BACKGROUND_COLOR.lstrip('#')
 		col_back_new = tuple(int(h[i:i+2], 16) for i in (0, 2 ,4))
 		print(col_back_new[0],col_back_new[1],col_back_new[2])
 		# read image into matrix.
-		self.map_image = cv2.imread(OFFICE_SVG_PATH)
+		self.map_image = cv2.imread(self.map_image_path)
 		self.map_image[np.where((self.map_image == [col_back[2],col_back[1],col_back[0]])
 			.all(axis = 2))] = col_back_new[2],col_back_new[1],col_back_new[0]
-		
+
 		self.image_to_color = self.map_image
 		self.useStandardFreq = False
-		self.index_label_freq = 1
+		self.index_label_freq = 0
 		self.label = dict()
 		self.destroy_child = False
+
+	def get_params(self):
+		parser = argparse.ArgumentParser(description='location.py')
+		parser.add_argument('-i', '--map_image', dest='map_image', type=str, required=False, help='Path of image of the map')
+		parser.add_argument('-y', '--map_yaml', dest='map_yaml', type=str, required=False, help='Path of file yaml of the map')
+		self.args = parser.parse_args()
+		user = os.getenv("SUDO_USER")
+
+		if user is None:
+			print("This program needs 'sudo'")
+			return False
+		else:
+			print('Press CTRL+c to stop sniffing...')
+			return True
+
 
 	def select_power_streght(self, widget):
 		self.useStandardFreq = widget.var.get()
@@ -199,10 +203,10 @@ class GUI_Manager:
 			for wid in self.display4.winfo_children():
 				wid.destroy()
 				self.destroy_child = True
-		else:
-			label_freq_range = Label(self.display4, text="Power Ranges:")
-			label_freq_range.grid(row=0, sticky="NW", padx=3, pady=3)
-			label_freq_range.configure(background=BACKGROUND_COLOR_MENU,font=('Arial', 10, 'bold'))
+		# else:
+		# 	label_freq_range = Label(self.display4, text="Power Ranges:")
+		# 	label_freq_range.pack(side=TOP, padx=3, pady=3) #grid(row=0, padx=3, pady=3)#
+		# 	label_freq_range.configure(background=BACKGROUND_COLOR_MENU,font=('Arial', 10, 'bold'))
 		# print("BUTTONN {}'s value is {}.".format(widget['text'], widget.var.get()))
 		self.clear_label_image()
 		self.image_to_color = self.map_image.copy()
@@ -234,7 +238,7 @@ class GUI_Manager:
 			for wid in self.display4.winfo_children():
 				wid.destroy()
 				self.destroy_child = True
-			self.index_label_freq = 1
+			self.index_label_freq = 0
 			for i in self.AP_enabled:
 				self.create_label_power(self.AP[i], i)
 				self.draw_circle(i)
@@ -248,19 +252,21 @@ class GUI_Manager:
 		if self.useStandardFreq:
 			return
 		else:
-			if self.destroy_child:
-				label_freq_range = Label(self.display4, text="Power Ranges:")
-				label_freq_range.grid(row=0, sticky="NW", padx=3, pady=3)
-				label_freq_range.configure(background=BACKGROUND_COLOR_MENU,font=('Arial', 10, 'bold'))
-				self.destroy_child = False
+			# if self.destroy_child:
+			# 	label_freq_range = Label(self.display4, text="Power Ranges:")
+			# 	label_freq_range.pack(side=TOP, padx=3, pady=3) #grid(row=0, padx=3, pady=3)#
+			# 	label_freq_range.configure(background=BACKGROUND_COLOR_MENU,font=('Arial', 10, 'bold'))
+			# 	self.destroy_child = False
 			label_str = name_ap +': ['+self.tuple_mapping[address][1][address][1]+','+self.tuple_mapping[address][1][address][0]+']'
 			self.label[address] = Label(self.display4, text=label_str)
-			self.label[address].grid(row=self.index_label_freq,sticky="W", padx=5)
-			self.index_label_freq = self.index_label_freq+1
+			# self.label[address].pack(side=TOP, padx=5) #grid(row=self.index_label_freq, padx=5) #
 			cmap = plt.get_cmap(self.list_color[self.color_dict[address]])
 			color = cmap(self.norm(MAX_VALUE_FREQUENCY))[:3]
 			self.label[address].config(fg=matplotlib.colors.to_hex([color[0],color[1],color[2]]))
-			self.label[address].configure(background=BACKGROUND_COLOR_MENU, pady=2)
+			self.label[address].configure(background=BACKGROUND_COLOR_MENU, pady=2, padx=5)
+
+			self.display4.create_window(0, self.index_label_freq*20, anchor='nw', window=self.label[address], height=20)
+			self.index_label_freq = self.index_label_freq+1
 			self.window.grid_propagate(0)
 
 	def select_all(self):
@@ -276,10 +282,10 @@ class GUI_Manager:
 		self.image_to_color = self.map_image.copy()
 		for wid in self.display4.winfo_children():
 			wid.destroy()
-		self.index_label_freq = 1
+		self.index_label_freq = 0
 		for ap in self.AP:
 			if ap in self.AP_enabled:
-				self.AP_enabled.remove(ap) 
+				self.AP_enabled.remove(ap)
 			self.ap_cbs.keys()[self.ap_cbs.values().index(ap)].var.set(False)
 		self.resize_image()
 		self.show_frame(self.resized_image)
@@ -308,8 +314,8 @@ class GUI_Manager:
 			#3450 tupla
 			# x = self.w/2 - (int(((-1)*key[0])/self.resolution_value))
 			# y = self.h/2 - (int((key[1])/self.resolution_value)) - 350
-			y = self.w/2 - (int((key[0])/self.resolution_value)) 
-			x = self.h/2 - (int((key[1])/self.resolution_value)) 
+			y = self.w/2 - (int((key[0])/self.resolution_value))
+			x = self.h/2 - (int((key[1])/self.resolution_value))
 			# print("AFTER:", x, y)
 			cv2.circle(self.image_to_color, (x,y), 2, (color[2]*255,color[1]*255,color[0]*255), -1)
 	    self.resize_image()
@@ -328,7 +334,7 @@ class GUI_Manager:
 		#center_x = self.w/2
 		#center_y = self.h/2
 		# self.image_to_color = self.map_image.copy()
-		map_center = self.image_to_color[int(self.center_x-MAP_SIZE/2.5):int(self.center_x+MAP_SIZE/2.5), 
+		map_center = self.image_to_color[int(self.center_x-MAP_SIZE/2.5):int(self.center_x+MAP_SIZE/2.5),
 		int(self.center_y-MAP_SIZE/4):int(self.center_y+MAP_SIZE), :]
 		r = 850.0 / map_center.shape[1]
 		dim = (850, int(map_center.shape[0] * r))
@@ -339,7 +345,7 @@ class GUI_Manager:
 		self.h_res = self.resized_image.shape[1]*CONST_RESIZE
 		# self.image_to_color = self.resized_image.copy()
 		print("RES ",self.w_res, self.h_res) #500,500
-		
+
 
 	def find_rgb(self, imagename, r_query, g_query, b_query):
 		img = Image.open(imagename)
@@ -357,7 +363,7 @@ class GUI_Manager:
 		imgtk = ImageTk.PhotoImage(image=img)
 		self.display1.imgtk = imgtk #Shows frame for display 1
 		self.display1.configure(image=imgtk)
-		# window.after(10, show_frame) 
+		# window.after(10, show_frame)
 	def clear_label_image(self):
 	    self.display1.config(image='')
 
@@ -372,7 +378,7 @@ class GUI_Manager:
 
 	def get_center(self):
 		pattern = re.compile("origin")
-		for _, line in enumerate(open(FILE_OFFICE_PATH)):
+		for _, line in enumerate(open(self.map_yaml_path)):
 			for _ in re.finditer(pattern, line):
 				self.center_x = float(line.split(":")[1].split(",")[1:][0])/self.resolution_value
 				print(self.center_x)
@@ -381,7 +387,7 @@ class GUI_Manager:
 
 	def get_resolution(self):
 		pattern = re.compile("resolution")
-		for _, line in enumerate(open(FILE_OFFICE_PATH)):
+		for _, line in enumerate(open(self.map_yaml_path)):
 			for _ in re.finditer(pattern, line):
 				return float(line.split(":")[1][:-1])
 
@@ -391,24 +397,32 @@ if __name__ == "__main__":
 	gui_manager.resize_image()
 
 	gui_manager.update()
-	# root = tk.Tk()
-	# root.geometry("600x300+900+200")
 
-	# main_frame = tk.Frame(root, bg=BACKGROUND_COLOR_MENU)
-	# body_frame = tk.Frame(main_frame)
+	# master = Tk()
+	#
+	# scrollbar = Scrollbar(master)
+	# scrollbar.pack(side=RIGHT, fill=Y)
+	#
+	# listbox = Listbox(master, yscrollcommand=scrollbar.set)
+	# for i in range(1000):
+	#     listbox.insert(END, str(i))
+	# listbox.pack(side=LEFT, fill=BOTH)
+	#
+	# scrollbar.config(command=listbox.yview)
+	#
+	# mainloop()
+	# app = Tk()
 
-	# for i in range(3):
-	# 	md_label = MDLabel(body_frame, sc="grey", si=1, text="Label " + str(i))
-	# 	md_label.pack(expand=1, fill="both", pady=5)
+	# frame=Frame(app,width=500,height=500)
+	# frame.grid(row=0,column=0)
+	# canvas=Canvas(frame,bg='#FFFFFF',width=500,height=500,scrollregion=(0,0,500,800))
 
-	# body_frame.pack(expand=1, fill="both", pady=5, padx=5)
-	# main_frame.pack(expand=True, fill="both")
+	# vbar=Scrollbar(frame,orient=VERTICAL)
+	# vbar.pack(side=RIGHT,fill=Y)
+	# vbar.config(command=canvas.yview)
+	# canvas.config(yscrollcommand=vbar.set)
+	# canvas.pack()
 
-	# root.mainloop()
+	# canvas.create_rectangle((200,300,300,600))
 
-	
-	
-
-
-
-
+	# app.mainloop()
