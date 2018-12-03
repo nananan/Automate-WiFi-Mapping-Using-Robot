@@ -22,6 +22,7 @@ class CinnamonController:
 
         # self.interface = "wlp2s0_mon"
         self.interface = rospy.get_param("~interface", "wlp3s0")
+	print("INTERFACEEEEEEEEEE",self.interface)
         self.sniffer = cinnamon_man.Sniffer()
         self.rate = rospy.Rate(10)
 

@@ -1,7 +1,7 @@
 <launch>
-  <arg name="interface_" value="wlp2s0_mon"/>
+  <!--<arg name="interface_" value="wlp2s0_mon"/>-->
 
-  <node pkg="cinnamon_controller" type="CinnamonController.py" name="cinnamon_controller" output="screen">
-      <rosparam param="interface" value="$(arg interface_)"/>
+  <node pkg="cinnamon" type="cinnamonController.py" name="cinnamon_controller" output="screen">
+      <param name="interface" value="$(arg interface)"/>
   </node>
 </launch>
