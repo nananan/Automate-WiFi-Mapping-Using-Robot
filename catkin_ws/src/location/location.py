@@ -44,10 +44,8 @@ class GUI_Manager:
 			os._exit(0)
 		self.map_image_path = self.args.map_image if self.args.map_image else MAP_IMAGE_PATH
 		self.map_yaml_path = self.args.map_yaml if self.args.map_yaml else MAP_YAML_PATH
-		# print(self.map_image_path, self.map_yaml_path)
-		#Get resolution value
+		#Get resolution value of the map image
 		self.resolution_value = self.get_resolution()
-		print(self.resolution_value)
 		self.get_center()
 		#Create APs list
 		self.map_manager = mapping_man.Mapping()
@@ -77,8 +75,9 @@ class GUI_Manager:
 		# self.display2_sh.grid_propagate(False)
 
 		self.display2 = tk.Canvas(self.window)
-		self.display2.config(background=BACKGROUND_COLOR_MENU, borderwidth = 1, highlightthickness = 1, width=300, height=510)
-		self.display2.pack(side=RIGHT)#grid(row=0, column=1, sticky="N", padx=50, pady=20) #Display 2
+		self.display2.config(background=BACKGROUND_COLOR_MENU, borderwidth=2, relief="raised", width=280, height=510)
+		#flat, groove, raised, ridge, solid, or sunken
+		self.display2.pack(side=RIGHT,fill=NONE, expand=1, padx=20, pady=10)#grid(row=0, column=1, sticky="N", padx=50, pady=20) #Display 2
 		self.display2.grid_propagate(0)
 		# self.display2.create_arc(710, 300, 840, 300,style='arc', width=300)
 
@@ -99,13 +98,14 @@ class GUI_Manager:
 		label_list_wifi.grid(row=0, sticky="W", padx=3, pady=3)
 		label_list_wifi.configure(background=BACKGROUND_COLOR_MENU, font=('Arial', 11, 'bold'))
 		frame_ap=Frame(self.display2,width=100,height=500)
-		frame_ap.grid(row=1,column=0)
+		# frame_ap.configure(borderwidth=2, relief="raised")
+		frame_ap.grid(row=1,column=0, padx=3)
 
-		scrollbar_ap = Scrollbar(frame_ap)
+		scrollbar_ap = Scrollbar(frame_ap,bg=BACKGROUND_COLOR)
 		scrollbar_ap.pack(side=RIGHT, fill=Y)
 
 		self.display_ap=Canvas(frame_ap,bg=BACKGROUND_COLOR_MENU)
-		self.display_ap.configure(width=250,height=180)
+		self.display_ap.configure(width=250,height=180, borderwidth = 0, highlightthickness = 0)
 		self.display_ap.configure(scrollregion=(0,0,250,len(self.AP)*20), yscrollcommand=scrollbar_ap.set)
 		self.display_ap.pack(fill='both', expand=True, side='left')
 
@@ -150,7 +150,7 @@ class GUI_Manager:
 
 		self.display3 = tk.Frame(self.display2, width=250, height=50)
 		self.display3.config(background=BACKGROUND_COLOR_MENU)
-		self.display3.grid(row=i, column=0, sticky="N", pady=3) #Display 3
+		self.display3.grid(row=i, column=0, sticky="NW", pady=3, padx=3) #Display 3
 		self.display3.grid_propagate(0)
 		label_freq = Label(self.display3, text="Power:")
 		label_freq.grid(row=0, sticky="W", pady=3)
@@ -164,16 +164,16 @@ class GUI_Manager:
 		butt_freq.grid(row=i, sticky="W", padx=10)
 		i = i+1
 		label_freq_range = Label(self.display2, text="Power Ranges:")
-		label_freq_range.grid(row=i, sticky="W", padx=7, pady=3) #grid(row=0, padx=3, pady=3)#
+		label_freq_range.grid(row=i, sticky="NW", padx=3, pady=3) #grid(row=0, padx=3, pady=3)#
 		label_freq_range.configure(background=BACKGROUND_COLOR_MENU,font=('Arial', 10, 'bold'))
 		i=i+1
 		frame=Frame(self.display2,width=100,height=500)
 		frame.grid(row=i,column=0)
 
-		scrollbar = Scrollbar(frame)
+		scrollbar = Scrollbar(frame,bg=BACKGROUND_COLOR)
 		scrollbar.pack(side=RIGHT, fill=Y)
 
-		self.display4=Canvas(frame,bg=BACKGROUND_COLOR_MENU)
+		self.display4=Canvas(frame,bg=BACKGROUND_COLOR_MENU, borderwidth = 0, highlightthickness = 0)
 		self.display4.configure(width=250,height=130)
 		self.display4.configure(scrollregion=(0,0,250,len(self.AP)*20), yscrollcommand=scrollbar.set)
 		self.display4.pack(fill='both', expand=True, side='left')
@@ -412,32 +412,6 @@ if __name__ == "__main__":
 	gui_manager.resize_image()
 
 	gui_manager.update()
-
-	# master = Tk()
-	#
-	# scrollbar = Scrollbar(master)
-	# scrollbar.pack(side=RIGHT, fill=Y)
-	#
-	# listbox = Listbox(master, yscrollcommand=scrollbar.set)
-	# for i in range(1000):
-	#     listbox.insert(END, str(i))
-	# listbox.pack(side=LEFT, fill=BOTH)
-	#
-	# scrollbar.config(command=listbox.yview)
-	#
-	# mainloop()
-	# app = Tk()
-
-	# frame=Frame(app,width=500,height=500)
-	# frame.grid(row=0,column=0)
-	# canvas=Canvas(frame,bg='#FFFFFF',width=500,height=500,scrollregion=(0,0,500,800))
-
-	# vbar=Scrollbar(frame,orient=VERTICAL)
-	# vbar.pack(side=RIGHT,fill=Y)
-	# vbar.config(command=canvas.yview)
-	# canvas.config(yscrollcommand=vbar.set)
-	# canvas.pack()
-
-	# canvas.create_rectangle((200,300,300,600))
-
-	# app.mainloop()
+	# plastik_image_dir='img/'
+	# root = Tkinter.Tk()
+	# plastik_theme.install(plastik_image_dir)

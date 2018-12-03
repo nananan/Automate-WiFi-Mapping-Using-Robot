@@ -19,15 +19,16 @@ class CinnamonController:
         rospy.loginfo("Started ")
         print("Started")
         self.stopSniff = False
-        
-        self.interface = "wlp2s0_mon"
+
+        # self.interface = "wlp2s0_mon"
+        self.interface = rospy.get_param("~interface", "wlp3s0")
         self.sniffer = cinnamon_man.Sniffer()
         self.rate = rospy.Rate(10)
 
     def startSniff(self):
         print("Start to sniff from "+self.interface)
         sniff(iface=self.interface, prn=self.sniffer.sniffAP, stop_filter=self.checkStop, store=0)
-        
+
     def setStopSniff(self, stop_sniff):
         self.stopSniff = stop_sniff
 
