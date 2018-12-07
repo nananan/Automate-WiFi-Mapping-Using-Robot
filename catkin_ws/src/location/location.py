@@ -5,12 +5,16 @@ from sys import version_info
 if version_info.major == 2: # Python 2.x
 	import Tkinter as tk
 	from Tkinter import *
+	# import ttk
 elif version_info.major == 3: # Python 3.x
 	import tkinter as tk
 	from tkinter import *
+	# import tkinter.ttk as ttk
+from ttkthemes import themed_tk as thk
+import ttk
+
 from PIL import Image
 from PIL import ImageTk
-
 import math
 import numpy as np
 import matplotlib as mpl
@@ -54,7 +58,17 @@ class GUI_Manager:
 		self.mapping_AP = {}
 
 		#Set up GUI
-		self.window = tk.Tk()  #Makes main window
+		# self.window = tk.Tk()  #Makes main window
+		self.window = thk.ThemedTk()
+		self.window.get_themes()
+		self.window.set_theme("arc")
+		#Available Themes: ('blue', 'alt', 'classic', 'ubuntu', 'keramik_alt', 'elegance',
+		#'equilux---', 'black', 'default', 'arc-----', 'smog', 'radiance', 'itft1',
+		#'plastik', 'aquativo', 'keramik', 'clam', 'winxpblue-----', 'kroc', 'clearlooks')
+
+		# s=ttk.Style()
+		# print(s.theme_names())
+
 		self.window.wm_title("Mapping Tino")
 		self.window.resizable()
 		self.window.maxsize()
@@ -64,22 +78,21 @@ class GUI_Manager:
 
 		#Graphics window
 		self.imageFrame = tk.Frame(self.window, width=900, height=500)
-		self.imageFrame.pack(side=LEFT, padx=10, pady=10)#grid(row=0, column=0, padx=10, pady=10)
+		self.imageFrame.grid(row=0, column=0, padx=10, pady=10) #pack(side=LEFT, padx=10, pady=10)#
 		self.display1 = tk.Label(self.imageFrame, borderwidth = 0, highlightthickness = 0)#, width=800, height=500)
-		self.display1.pack(side=LEFT)#grid(row=0, column=0) #, padx=10, pady=2)  #Display 1
+		self.display1.grid(row=0, column=0) #, padx=10, pady=2)  # pack(side=LEFT)#
 
-		#SHADOW
-		# self.display2_sh = tk.Frame(self.window)
-		# self.display2_sh.config(background="#82868a", borderwidth = 0, highlightthickness = 0, width=301, height=512)
-		# self.display2_sh.grid(row=0, column=1, sticky="N", padx=50, pady=20) #Display 2
-		# self.display2_sh.grid_propagate(False)
+		#SHADOW for Display2
+		self.display2_sh = tk.Frame(self.window)
+		self.display2_sh.config(background="#82868a", borderwidth = 0, highlightthickness = 0, width=287, height=518)
+		self.display2_sh.grid(row=0, column=1, sticky="N", padx=50, pady=20) #Display 2
+		self.display2_sh.grid_propagate(False)
 
+		'''Panel for the menu'''
 		self.display2 = tk.Canvas(self.window)
-		self.display2.config(background=BACKGROUND_COLOR_MENU, borderwidth=2, relief="raised", width=280, height=510)
-		#flat, groove, raised, ridge, solid, or sunken
-		self.display2.pack(side=RIGHT,fill=NONE, expand=1, padx=20, pady=10)#grid(row=0, column=1, sticky="N", padx=50, pady=20) #Display 2
+		self.display2.config(background=BACKGROUND_COLOR_MENU, borderwidth=2, width=280, height=510)
+		self.display2.grid(row=0, column=1, sticky="N", padx=50, pady=20) #pack(side=RIGHT,fill=NONE, expand=1, padx=20, pady=10)#
 		self.display2.grid_propagate(0)
-		# self.display2.create_arc(710, 300, 840, 300,style='arc', width=300)
 
 		self.tuple_mapping = dict()
 		self.cmaps = OrderedDict()
@@ -88,8 +101,7 @@ class GUI_Manager:
 			'Greys', 'Purples', 'Blues', 'Greens', 'Oranges', 'Reds',
 			'YlOrBr', 'YlOrRd', 'OrRd', 'PuRd', 'RdPu', 'BuPu',
 			'GnBu', 'PuBu', 'YlGnBu', 'PuBuGn', 'BuGn', 'YlGn']
-			#Accent, Accent_r, Blues, Blues_r, BrBG, BrBG_r, BuGn, BuGn_r, BuPu, BuPu_r, CMRmap, CMRmap_r, Dark2, Dark2_r, GnBu, GnBu_r, Greens, Greens_r, Greys, Greys_r, OrRd, OrRd_r, Oranges, Oranges_r, PRGn, PRGn_r, Paired, Paired_r, Pastel1, Pastel1_r, Pastel2, Pastel2_r, PiYG, PiYG_r, PuBu, PuBuGn, PuBuGn_r, PuBu_r, PuOr, PuOr_r, PuRd, PuRd_r, Purples, Purples_r, RdBu, RdBu_r, RdGy, RdGy_r, RdPu, RdPu_r, RdYlBu, RdYlBu_r, RdYlGn, RdYlGn_r, Reds, Reds_r, Set1, Set1_r, Set2, Set2_r, Set3, Set3_r, Spectral, Spectral_r, Vega10, Vega10_r, Vega20, Vega20_r, Vega20b, Vega20b_r, Vega20c, Vega20c_r, Wistia, Wistia_r, YlGn, YlGnBu, YlGnBu_r, YlGn_r, YlOrBr, YlOrBr_r, YlOrRd, YlOrRd_r, afmhot, afmhot_r, autumn, autumn_r, binary, binary_r, bone, bone_r, brg, brg_r, bwr, bwr_r, cool, cool_r, coolwarm, coolwarm_r, copper, copper_r, cubehelix, cubehelix_r, flag, flag_r, gist_earth, gist_earth_r, gist_gray, gist_gray_r, gist_heat, gist_heat_r, gist_ncar, gist_ncar_r, gist_rainbow, gist_rainbow_r, gist_stern, gist_stern_r, gist_yarg, gist_yarg_r, gnuplot, gnuplot2, gnuplot2_r, gnuplot_r, gray, gray_r, hot, hot_r, hsv, hsv_r, inferno, inferno_r, jet, jet_r, magma, magma_r, nipy_spectral, nipy_spectral_r, ocean, ocean_r, pink, pink_r, plasma, plasma_r, prism, prism_r, rainbow, rainbow_r, seismic, seismic_r, spectral, spectral_r, spring, spring_r, summer, summer_r, terrain, terrain_r, viridis, viridis_r, winter, winter_r
-		# self.cmaps.items()[0][1]['Oranges'] = self.reverse_colourmap(self.cmaps.items()[0][1]['Oranges'])
+			#Available colors: Accent, Accent_r, Blues, Blues_r, BrBG, BrBG_r, BuGn, BuGn_r, BuPu, BuPu_r, CMRmap, CMRmap_r, Dark2, Dark2_r, GnBu, GnBu_r, Greens, Greens_r, Greys, Greys_r, OrRd, OrRd_r, Oranges, Oranges_r, PRGn, PRGn_r, Paired, Paired_r, Pastel1, Pastel1_r, Pastel2, Pastel2_r, PiYG, PiYG_r, PuBu, PuBuGn, PuBuGn_r, PuBu_r, PuOr, PuOr_r, PuRd, PuRd_r, Purples, Purples_r, RdBu, RdBu_r, RdGy, RdGy_r, RdPu, RdPu_r, RdYlBu, RdYlBu_r, RdYlGn, RdYlGn_r, Reds, Reds_r, Set1, Set1_r, Set2, Set2_r, Set3, Set3_r, Spectral, Spectral_r, Vega10, Vega10_r, Vega20, Vega20_r, Vega20b, Vega20b_r, Vega20c, Vega20c_r, Wistia, Wistia_r, YlGn, YlGnBu, YlGnBu_r, YlGn_r, YlOrBr, YlOrBr_r, YlOrRd, YlOrRd_r, afmhot, afmhot_r, autumn, autumn_r, binary, binary_r, bone, bone_r, brg, brg_r, bwr, bwr_r, cool, cool_r, coolwarm, coolwarm_r, copper, copper_r, cubehelix, cubehelix_r, flag, flag_r, gist_earth, gist_earth_r, gist_gray, gist_gray_r, gist_heat, gist_heat_r, gist_ncar, gist_ncar_r, gist_rainbow, gist_rainbow_r, gist_stern, gist_stern_r, gist_yarg, gist_yarg_r, gnuplot, gnuplot2, gnuplot2_r, gnuplot_r, gray, gray_r, hot, hot_r, hsv, hsv_r, inferno, inferno_r, jet, jet_r, magma, magma_r, nipy_spectral, nipy_spectral_r, ocean, ocean_r, pink, pink_r, plasma, plasma_r, prism, prism_r, rainbow, rainbow_r, seismic, seismic_r, spectral, spectral_r, spring, spring_r, summer, summer_r, terrain, terrain_r, viridis, viridis_r, winter, winter_r
 		self.list_color = self.cmaps.items()[0][1]
 		self.norm = matplotlib.colors.Normalize(vmin=MIN_VALUE_FREQUENCY, vmax=MAX_VALUE_FREQUENCY)
 		self.color_dict = {}
@@ -101,7 +113,7 @@ class GUI_Manager:
 		# frame_ap.configure(borderwidth=2, relief="raised")
 		frame_ap.grid(row=1,column=0, padx=3)
 
-		scrollbar_ap = Scrollbar(frame_ap,bg=BACKGROUND_COLOR)
+		scrollbar_ap = ttk.Scrollbar(frame_ap)
 		scrollbar_ap.pack(side=RIGHT, fill=Y)
 
 		self.display_ap=Canvas(frame_ap,bg=BACKGROUND_COLOR_MENU)
@@ -170,7 +182,7 @@ class GUI_Manager:
 		frame=Frame(self.display2,width=100,height=500)
 		frame.grid(row=i,column=0)
 
-		scrollbar = Scrollbar(frame,bg=BACKGROUND_COLOR)
+		scrollbar = ttk.Scrollbar(frame)
 		scrollbar.pack(side=RIGHT, fill=Y)
 
 		self.display4=Canvas(frame,bg=BACKGROUND_COLOR_MENU, borderwidth = 0, highlightthickness = 0)
@@ -190,13 +202,14 @@ class GUI_Manager:
 		self.map_image = cv2.imread(self.map_image_path)
 		self.map_image[np.where((self.map_image == [col_back[2],col_back[1],col_back[0]])
 			.all(axis = 2))] = col_back_new[2],col_back_new[1],col_back_new[0]
-
+		
 		self.image_to_color = self.map_image
 		self.useStandardFreq = False
 		self.index_label_freq = 0
 		self.label = dict()
 		self.destroy_child = False
 
+	'''Get parameters from args to set the file needed to map'''
 	def get_params(self):
 		parser = argparse.ArgumentParser(description='location.py')
 		parser.add_argument('-i', '--map_image', dest='map_image', type=str, required=False, help='Path of image of the map')
@@ -218,11 +231,6 @@ class GUI_Manager:
 			for wid in self.display4.winfo_children():
 				wid.destroy()
 				self.destroy_child = True
-		# else:
-		# 	label_freq_range = Label(self.display4, text="Power Ranges:")
-		# 	label_freq_range.pack(side=TOP, padx=3, pady=3) #grid(row=0, padx=3, pady=3)#
-		# 	label_freq_range.configure(background=BACKGROUND_COLOR_MENU,font=('Arial', 10, 'bold'))
-		# print("BUTTONN {}'s value is {}.".format(widget['text'], widget.var.get()))
 		self.clear_label_image()
 		self.image_to_color = self.map_image.copy()
 		for i in self.AP_enabled:
@@ -236,10 +244,7 @@ class GUI_Manager:
 	def upon_select(self, widget):
 	    print("{}'s value is {}.".format(self.ap_cbs[widget], widget.var.get()))
 	    address = self.ap_cbs[widget]
-	    # for ap in self.AP:
-		# 	if self.AP[ap] == widget['text']:
-		# 	    address = ap
-		# 	    pass
+
 	    if widget.var.get() == True:
 			self.AP_enabled.append(address)
 			self.draw_circle(address)
@@ -267,13 +272,8 @@ class GUI_Manager:
 		if self.useStandardFreq:
 			return
 		else:
-			# if self.destroy_child:
-			# 	label_freq_range = Label(self.display4, text="Power Ranges:")
-			# 	label_freq_range.pack(side=TOP, padx=3, pady=3) #grid(row=0, padx=3, pady=3)#
-			# 	label_freq_range.configure(background=BACKGROUND_COLOR_MENU,font=('Arial', 10, 'bold'))
-			# 	self.destroy_child = False
 			label_str = name_ap +': ['+self.tuple_mapping[address][1][address][1]+','+self.tuple_mapping[address][1][address][0]+']'
-			self.label[address] = Label(self.display4, text=label_str)
+			self.label[address] = tk.Label(self.display4, text=label_str,font=('Arial', 10, 'bold'))
 			# self.label[address].pack(side=TOP, padx=5) #grid(row=self.index_label_freq, padx=5) #
 			cmap = plt.get_cmap(self.list_color[self.color_dict[address]])
 			color = cmap(self.norm(MAX_VALUE_FREQUENCY))[:3]
