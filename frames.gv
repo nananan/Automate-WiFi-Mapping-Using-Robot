@@ -1,7 +1,18 @@
 digraph G {
-"odom" -> "base_footprint"[label="Broadcaster: /ekf_localization\nAverage rate: 57.030 Hz\nMost recent transform: 1539955179.608 ( 0.008 sec old)\nBuffer length: 4.945 sec\n"];
+"base_footprint" -> "base_link"[label="Broadcaster: /robot_state_publisher\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1544352277.189 sec old)\nBuffer length: 0.000 sec\n"];
+"base_link" -> "camera_link"[label="Broadcaster: /robot_state_publisher\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1544352277.189 sec old)\nBuffer length: 0.000 sec\n"];
+"base_link" -> "hokuyo"[label="Broadcaster: /robot_state_publisher\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1544352277.189 sec old)\nBuffer length: 0.000 sec\n"];
+"map" -> "odom"[label="Broadcaster: /map_odom_broadcaster\nAverage rate: 10.190 Hz\nMost recent transform: 1544352277.207 ( -0.017 sec old)\nBuffer length: 4.809 sec\n"];
+"base_link" -> "wheel_1"[label="Broadcaster: /robot_state_publisher\nAverage rate: 10.209 Hz\nMost recent transform: 1544352277.114 ( 0.076 sec old)\nBuffer length: 4.800 sec\n"];
+"base_link" -> "wheel_2"[label="Broadcaster: /robot_state_publisher\nAverage rate: 10.209 Hz\nMost recent transform: 1544352277.114 ( 0.076 sec old)\nBuffer length: 4.800 sec\n"];
+"base_link" -> "wheel_3"[label="Broadcaster: /robot_state_publisher\nAverage rate: 10.209 Hz\nMost recent transform: 1544352277.114 ( 0.076 sec old)\nBuffer length: 4.800 sec\n"];
+"base_link" -> "wheel_4"[label="Broadcaster: /robot_state_publisher\nAverage rate: 10.209 Hz\nMost recent transform: 1544352277.114 ( 0.076 sec old)\nBuffer length: 4.800 sec\n"];
 edge [style=invis];
  subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
-"Recorded at time: 1539955179.616"[ shape=plaintext ] ;
- }->"odom";
+"Recorded at time: 1544352277.189"[ shape=plaintext ] ;
+ }->"base_footprint";
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 1544352277.189"[ shape=plaintext ] ;
+ }->"map";
 }
