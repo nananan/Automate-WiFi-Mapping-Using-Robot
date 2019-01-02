@@ -1,5 +1,5 @@
 # SniffingRobot
-This work is my master's thesis and we presented an autonomous differential-drive robot whose task is to map the presence of IEEE 802.11 radio sources and their signal strength.
+We presented an autonomous differential-drive robot whose task is to map the presence of IEEE 802.11 radio sources and their signal strength.
 In this work, we scan the whole area in which the robot is deployed and create a 2D map of the surrounding environment, by using a LiDAR sensor. Then, after having reconstructed the environment, the robot will begin the exploration phase whose task will be to identify and map radio sources. To perform this analysis we used Cinnamon, a module which I developed during my bachelor thesis work, that monitors a WiFi network and analyzes 802.11 frames. After the exploration phase, we have that the robot has managed to reconstruct the position of each Access Point. Mapped data can be graphically visualized through a specifically developed tool, written in Python.
 
 ## Running
@@ -15,3 +15,12 @@ Now, we can move the robot via Joystick and we can see the updated map on RViz.
 When we finish to reconstruct, we must save it and, so, we launch `rosrun map_server map_saver -f NAME_OF_MAP` and this saves two file of the reconstructed map. One is the image of the map and the other contains some property of the map.
 
 ### Navigate and Collect Wireless Data
+
+
+
+### Analyse the collected data
+
+
+## Other Informations
+This is a work of my thesis for the Master's degree, you can read it at the following link:
+- https://mega.nz/#!ERshUYbS!mVrkZPPjx7VZInyIej3Mmy1xZBZ_4igxY07eHUoFwfA
