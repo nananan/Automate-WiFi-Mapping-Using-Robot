@@ -28,15 +28,23 @@ In this phase, the robot moves autonomously. So, we can disconnect the joystick.
 - `roslaunch corobot_launch motors.launch`, to launch the node needed to start the motors of the robot.
 In this way, we create the network ROS needed to allow the robot to move. 
 
+Since we had create the DB from the root user, the next node need the privilege and, so, we must lauch them from root user. After we are root, we launch the path needed to configure the ROS configuration, that is:
+- `source /opt/ros/kinetic/setup.bash`.
+- `spurce /home/USERNAME/git/Automate-WiFi-Mapping-Using-Robot/catkin_ws/devel/setup.bash`.
+
 First to give the goals to the robot, since we want to save them to use afterwards, we launch `rosrun location insertWaypoints.py`. This saves the goal position in a DB. Now, we can give a goal position to the robot by pressing the RViz's button *"Pose Estimate"* and, then, by pressing in a point in the map.
 
 When we finish to give the goals to the robot we can stop the *insertWaypoints.py* script and we can reposition the robot to the starting point. Now, we are ready to move the robot and to sniff the network to map the wireless sources. To do this we must launch two files:
-- `roslaunch cinnamon cinnamon_controller.launch interface:="NAME_OF_WIRELESS_INTERFACE"`, this launches the cinnamon tool, my work of the bachelor's thesis that we modify as a python module, that sniff the 802.11 frames and save in DB the Beacons. **N.B.**: the wireless interface must be set to **monitor mode**.
+- `roslaunch cinnamon cinnamon_controller.launch interface:="NAME_OF_WIRELESS_INTERFACE"`, this launches the cinnamon tool, my work of the bachelor's thesis that we modify as a python module, that sniff the 802.11 frames and save in DB the Beacons. **N.B.** the wireless interface must be set to **monitor mode**.
 - `rosrun movement sendGoals.py`, needed to give the saved goals to the robot to allow it to move autonomously.
 
 In this way, the robot moves by following the goals point and in the meantime it associate the frame that it receive in a moment with the position where it is located in the same moment. Every time that the robot receive a frame, the *cinnamon_controller* creates a new data with the information about the position and save it in the DB. 
 
 ### Analyse the collected data
+In this phase, finally, we can see the mapped data. This is done with a tool implemented in Python that take the data from the DB and visualize them in the map created in the first phase. To view the data we must launch:
+- `sudo python location.py`.
+If we would use other images in a different folder, we can launch:
+- `sudo python location.py --map_image=PATH_OF_MAP_PGM --map_yaml=PATH_OF_MAP_YAML`.
 
 
 ## Other Informations
