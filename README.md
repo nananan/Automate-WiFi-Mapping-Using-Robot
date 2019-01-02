@@ -3,6 +3,11 @@ We presented an autonomous differential-drive robot whose task is to map the pre
 In this work, we scan the whole area in which the robot is deployed and create a 2D map of the surrounding environment, by using a LiDAR sensor. Then, after having reconstructed the environment, the robot will begin the exploration phase whose task will be to identify and map radio sources. To perform this analysis we used Cinnamon, a module which I developed during my bachelor thesis work, that monitors a WiFi network and analyzes 802.11 frames. After the exploration phase, we have that the robot has managed to reconstruct the position of each Access Point. Mapped data can be graphically visualized through a specifically developed tool, written in Python.
 
 ## Preparation of System
+To use this work, we need of a version of ROS. We use the *Kinetic* version. Then, we need install and configure a MySQL/MariaDB database. For Linux we use the following guide to install and configure the DB:
+- https://thishosting.rocks/install-mysql-mariadb-ubuntu/
+- https://www.kaffeetalk.de/how-to-setup-and-configure-mysql-with-unixodbc-under-ubuntu-14-04/
+
+Then, we use the file **create_table.sql** in the *cinnamon* folder to create all the tables needed to save the data.
 
 ## Running
 First of all, we must launch the master node and to do this we launch in console the command `roscore`. Then, we must connect the LiDAR laser, mounted on the robot. First, we assure that the laser is connected phisically, then, in another console, we enter on the folder in which there is the launch file wrote to launch the laser's node (in this case, `cd catkin_ws/`) and launch `roslaunch src/hokuyo_start.launch`. In this way, we can use the laser needed in this work.
@@ -41,12 +46,23 @@ When we finish to give the goals to the robot we can stop the *insertWaypoints.p
 In this way, the robot moves by following the goals point and in the meantime it associate the frame that it receive in a moment with the position where it is located in the same moment. Every time that the robot receive a frame, the *cinnamon_controller* creates a new data with the information about the position and save it in the DB. 
 
 ### Analyse the collected data
-In this phase, finally, we can see the mapped data. This is done with a tool implemented in Python that take the data from the DB and visualize them in the map created in the first phase. To view the data we must launch:
-- `sudo python location.py`.
+In this phase, finally, we can see the mapped data. This is done with a tool implemented in Python 2.7.13 that take the data from the DB and visualize them in the map created in the first phase. To view the data we must launch:
+- `sudo python location.py`, this get the map image from the *navigation/mybot_navigation/map_cubo/* folder.
 If we would use other images in a different folder, we can launch:
 - `sudo python location.py --map_image=PATH_OF_MAP_PGM --map_yaml=PATH_OF_MAP_YAML`.
 
+## Dependencies
+- OpenCV for python
+- Tkinter
+- Ttkthemes
+- Matplotlib
 
 ## Other Informations
 This is a work of my thesis for the Master's degree, you can read it at the following link:
 - https://mega.nz/#!ERshUYbS!mVrkZPPjx7VZInyIej3Mmy1xZBZ_4igxY07eHUoFwfA
+
+The *Corobot* nodes are at the following repository:
+- https://github.com/morgancormier/corobot
+
+The original nodes needed to the autonomous navigation are at the following repository:
+- https://github.com/richardw05/mybot_ws
