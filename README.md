@@ -1,4 +1,4 @@
-# SniffingRobot
+# Automate-WiFi-Mapping-Using-Robot
 We presented an autonomous differential-drive robot whose task is to map the presence of IEEE 802.11 radio sources and their signal strength.
 In this work, we scan the whole area in which the robot is deployed and create a 2D map of the surrounding environment, by using a LiDAR sensor. Then, after having reconstructed the environment, the robot will begin the exploration phase whose task will be to identify and map radio sources. To perform this analysis we used Cinnamon, a module which I developed during my bachelor thesis work, that monitors a WiFi network and analyzes 802.11 frames. After the exploration phase, we have that the robot has managed to reconstruct the position of each Access Point. Mapped data can be graphically visualized through a specifically developed tool, written in Python.
 
@@ -8,7 +8,11 @@ First of all, and needed to all the phases, we must launch the master node and t
 This work is based on three phases: *Reconstruct Map*, *Navigate and Collect Wireless Data*, and, finally, *Analyse the collected data*.
 
 ### Reconstruct Map
-In the first phase, we must scan the area to reconstruct a 2D map of the environment, to do this we must launch some node. We launch `roslaunch mybot_description mybot_rviz_gmapping.launch` to have a graphical view of the robot's sensors. Indeed, this file launch RViz that takes the content of the existing topics. Then, we must launch the **Hector Slam** node needed to recostruct the map, so, we launch `roslaunch corobot_state_tf hectorSlam_robot.launch`. By launching this file, we see that we have some error that we resolve by launching `rosrun movement c8_odom`. This last creates the link between the *map* topic and the *odometry* topic and we can start to see on RViz what the robot sees. 
+In the first phase, we must scan the area to reconstruct a 2D map of the environment, to do this we must launch some node. We launch, in different console Linux:
+- `roslaunch mybot_description mybot_rviz_gmapping.launch` to have a graphical view of the robot's sensors. Indeed, this file launch RViz that takes the content of the existing topics.
+- `rosrun movement c8_odom`, that creates the link between the *map* topic and the *odometry* topic.
+- `roslaunch corobot_state_tf hectorSlam_robot.launch` and with this we launch the **Hector Slam** node needed to recostruct the map and we can start to see on RViz what the robot sees. 
+
 Now, we must move the robot. In this phase we move the robot by using a joystick and we need to launch a joystick node. Initially we assure that the joystick is connected to the robot via usb cable. Then, enter on *script* folder (`cd catkin_ws/src/script`) and we launch `./launchJoistick.sh`. In this way, we create the nodes needed to use the joystick.
 Finally, we must launch the file needed to move the motor of the robot. For this, we can launch `roslaunch phidget_motor PhidgetMotor.launch`.
 Now, we can move the robot via Joystick and we can see the updated map on RViz.
